@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 
@@ -11,11 +12,16 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+migrate = Migrate(app, db)
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), nullable=False)
+    age = db.Column(db.Integer, nullable=False)
+    role = db.Column(db.String(100))
+    description = db.Column(db.Text)
 
     def __repr__(self):
         return f"User('{self.username}')"
@@ -52,6 +58,7 @@ def register():
         email = request.form.get('email')
         username = request.form.get('username')
         password = request.form.get('password')
+        age = request.form.get('age')
 
         existing_user_email = User.query.filter_by(email=email).first()
         existing_user_username = User.query.filter_by(username=username).first()
@@ -73,7 +80,7 @@ def register():
             return render_template('register.html')
 
         password_hash = generate_password_hash(password)
-        new_user = User(email=email, username=username, password=password_hash)
+        new_user = User(email=email, username=username, password=password_hash, age=age)
 
         db.session.add(new_user)
         db.session.commit()
@@ -101,6 +108,16 @@ def profile():
         return redirect(url_for('login'))
     
     user = User.query.get(session['user_id'])
+
+    if request.method == 'POST':
+        new_description = request.form.get('description')
+
+        user.description = new_description
+        db.session.commit()
+
+        flash("Description Updated Successfully!")
+        return redirect(url_for('profile'))
+
     return render_template('profile.html', user=user)
 
 @app.route('/changepassword', methods=['GET', 'POST'])

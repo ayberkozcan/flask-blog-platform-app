@@ -3,23 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog</title>
+    <title>Blog - Profile</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='homepage.css') }}">
+
+    <script>
+
+        function descriptionEdit(){
+            const textarea = document.getElementById('descriptionTextarea');
+            const editButton = document.getElementById('editButton');
+            const saveButton = document.getElementById('saveButton');
+            const descriptionP = document.getElementById('descriptionP');
+
+            if (textarea.style.display === 'none'){
+                textarea.style.display = 'block';
+                editButton.style.display = 'none';
+                saveButton.style.display = 'inline';
+                descriptionP.style.display = "none";
+            }
+        }
+
+        function saveChanges(){
+            const textarea = document.getElementById('descriptionTextarea');
+            textarea.style.display = 'none';
+            
+            document.getElementById('descriptionP').style.display = 'inline';
+            document.getElementById('editButton').style.display = 'inline';
+            document.getElementById('saveButton').style.display = 'none';
+        }
+
+        window.onload = function(){
+            const flashMessages = document.getElementById('flashMessages');
+            if (flashMessages) {
+            setTimeout(() => {
+                flashMessages.style.display = 'none';
+            }, 2000);
+        }
+
+        }
+    </script>
 </head>
 <body>
-    <h1>Hello! This is your profile</h1>
+    <h1>Hello {{ user.username }}!</h1>
     <div class="button-container">
         <button onclick="location.href='/changepassword'">Change Password</button>
         <button onclick="location.href='/homepage'">Go Back</button>
     </div>
-    <!-- {% with messages = get_flashed_messages() %}
+    <br><br><br><br><br>
+    <div>
+        <label>Username:</label>
+        <p style="display: inline;">{{ user.username }}</p><br>
+        <label>E-Mail:</label>
+        <p style="display: inline;">{{ user.email }}</p><br>
+        <label>Role:</label>
+        <p style="display: inline;">{{ user.role }}</p><br><br>
+        <label>Description</label>
+        <p id="descriptionP">{{ user.description }}</p>
+        <br><br>
+
+        <form action="/profile" method="POST">
+            <textarea id="descriptionTextarea" name="description" row="4" cols="50" style="display: none;">{{ user.description }}</textarea>
+            <br>
+            
+            <button type="button" id="editButton" onclick="descriptionEdit()">Edit</button>
+            <button type="submit" id="saveButton" style="display: none;" onclick="saveChanges()">Save Changes</button>
+        </form>
+    </div>
+    {% with messages = get_flashed_messages() %}
         {% if messages %}
-            <ul>
+            <ul id="flashMessages">
             {% for message in messages %}
-                <li>{{ message }}</li>
+                <p>{{ message }}</p>
             {% endfor %}
             </ul>
         {% endif %}
-    {% endwith %} -->
+    {% endwith %}
 </body>
 </html>

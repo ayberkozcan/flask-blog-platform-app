@@ -1,30 +1,63 @@
 body {
     font-family: Arial, sans-serif;
-    text-align: center;
-    margin: 50px;
     background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
 }
 
 h1 {
     color: #333;
+    text-align: center;
 }
 
 .button-container {
-    margin-top: 20px;
+    text-align: center;
+    margin-bottom: 20px;
 }
 
 button {
-    padding: 10px 20px;
-    margin: 10px;
-    font-size: 16px;
-    cursor: pointer;
     background-color: #007bff;
     color: white;
     border: none;
+    padding: 10px 15px;
     border-radius: 5px;
+    cursor: pointer;
     transition: background-color 0.3s;
 }
 
 button:hover {
     background-color: #0056b3;
+}
+
+label {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+p {
+    display: inline;
+    margin: 0 10px 10px 0;
+    color: #555;
+}
+
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    resize: vertical;
+}
+
+textarea:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul p {
+    color: #ff0000;
 }
