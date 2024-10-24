@@ -40,9 +40,20 @@ p {
     color: #555;
 }
 
+.textarea-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px 0;
+}
+
 textarea {
     width: 100%;
+    max-width: 600px;
     padding: 10px;
+    margin: 10px 0;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 5px;
     resize: vertical;
@@ -53,11 +64,26 @@ textarea:focus {
     outline: none;
 }
 
+#titleTextarea {
+    height: 40px;
+    width: 500px;
+}
+
+#contentTextarea {
+    height: 200px;
+    width: 500px;
+}
+
+#tagTextarea {
+    height: 40px;
+    width: 500px;
+}
+
 ul {
     list-style-type: none;
     padding: 0;
 }
 
 ul p {
-    color: #ff0000;
+    color: #00b427;
 }

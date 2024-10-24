@@ -147,6 +147,18 @@ def changepassword():
     
     return render_template('changepassword.html')
 
+@app.route('/myblog', methods=['GET', 'POST'])
+def myblog():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    user = User.query.get(session['user_id'])
+
+    if request.method == 'POST':
+        flash("Post Created Successfully!")
+
+    return render_template('myblog.html')
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()

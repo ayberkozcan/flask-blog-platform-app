@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -34,15 +35,17 @@
         window.onload = function(){
             const flashMessages = document.getElementById('flashMessages');
             if (flashMessages) {
-            setTimeout(() => {
-                flashMessages.style.display = 'none';
-            }, 2000);
+                setTimeout(() => {
+                    flashMessages.style.display = 'none';
+                }, 2000);
+            }
         }
 
-        }
     </script>
 </head>
+
 <body>
+
     <h1>Hello {{ user.username }}!</h1>
     <div class="button-container">
         <button onclick="location.href='/changepassword'">Change Password</button>
@@ -68,6 +71,7 @@
             <button type="submit" id="saveButton" style="display: none;" onclick="saveChanges()">Save Changes</button>
         </form>
     </div>
+
     {% with messages = get_flashed_messages() %}
         {% if messages %}
             <ul id="flashMessages">
@@ -77,5 +81,7 @@
             </ul>
         {% endif %}
     {% endwith %}
+
 </body>
+
 </html>

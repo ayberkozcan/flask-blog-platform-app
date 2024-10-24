@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - My Blog</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='homepage.css') }}">
+
+    <script>
+
+        function createPost(){
+            const createpost = document.getElementById('createpostbutton');
+            const titletextarea = document.getElementById('titleTextarea');
+            const contenttextarea = document.getElementById('contentTextarea');
+            const tagtextarea = document.getElementById('tagTextarea');            
+            const savepost = document.getElementById('savepostbutton');
+
+            if(titletextarea.style.display === 'none'){
+                createpost.style.display = 'none';
+                titletextarea.style.display = 'block';
+                contenttextarea.style.display = 'block';
+                tagtextarea.style.display = 'block';
+                savepost.style.display = 'inline';
+            }
+        }
+
+        function savePost(){
+            const titletextarea = document.getElementById('titleTextarea');
+            const contenttextarea = document.getElementById('contentTextarea');
+            const tagtextarea = document.getElementById('tagTextarea');            
+            titletextarea.style.display = 'none';
+            contenttextarea.style.display = 'none';
+            tagtextarea.style.display = 'none';
+
+            document.getElementById('createpostbutton').style.display = 'inline';
+            document.getElementById('savepostbutton').style.display = 'none';
+        }
+
+        window.onload = function(){
+            const flashMessages = document.getElementById('flashMessages');
+            if (flashMessages) {
+                setTimeout(() => {
+                    flashMessages.style.display = 'none';
+                }, 2000);
+            }
+        }
+
+    </script>
+
+</head>
+<body>
+
+    <h1>Welcome</h1>
+    <div class="button-container">
+        <button onclick="location.href='/homepage'">Homepage</button>
+        <button onclick="location.href='/myblog'">My Blog</button>
+        <button onclick="location.href='/profile'">Profile</button>
+        <button onclick="location.href='/settings'">Settings</button>
+        <button onclick="location.href='/logout'">Log Out</button>
+    </div>
+    
+    <br><br><br>
+    
+    <div class="textarea-container">
+        <form action="/myblog" method="POST">
+            <button type="button" id="createpostbutton" name="createpostbutton" onclick="createPost()">Create a new post!</button>
+            <br>
+            
+            <textarea id="titleTextarea" name="titleTextarea" style="display: none;" placeholder="Enter the title"></textarea>
+            <textarea id="contentTextarea" name="contentTextarea" style="display: none;" placeholder="Write your content here..."></textarea>
+            <textarea id="tagTextarea" name="tagTextarea" style="display: none;" placeholder="Enter tags (comma separated)"></textarea>
+            <br>
+
+            <button type="submit" id="savepostbutton" style="display: none;" onclick="savePost()">Save Post</button>
+        </form>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul id="flashMessages">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+</body>
+</html>
