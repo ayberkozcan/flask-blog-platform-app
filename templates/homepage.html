@@ -1,19 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='homepage.css') }}">
-</head>
-<body>
-    <h1>Welcome</h1>
-    <div class="button-container">
-        <button onclick="location.href='/homepage'">Homepage</button>
-        <button onclick="location.href='/myblog'">My Blog</button>
-        <button onclick="location.href='/profile'">Profile</button>
-        <button onclick="location.href='/settings'">Settings</button>
-        <button onclick="location.href='/logout'">Log Out</button>
-    </div>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}My Blog{% endblock %}
+
+{% block content %}
+
+<div class="posts-container">
+    {% for post in posts %}
+        <div class="post">
+            <h2>{{ post.title }}</h2>
+            <hr>
+            <p>{{ post.content }}</p><br><br>
+            <p><strong>#{{ post.tags }}</strong></p><br><br>
+            <p>{{ post.created_date.strftime('%d %B') }}</p><br><br>
+            <p>{{ post.user.username }}</p>
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

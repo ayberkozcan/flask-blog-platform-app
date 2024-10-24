@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_migrate import Migrate
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -25,10 +26,23 @@ class User(db.Model):
 
     def __repr__(self):
         return f"User('{self.username}')"
+    
+class Post(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    content = db.Column(db.Text)
+    tags = db.Column(db.String(100))
+    created_date = db.Column(db.DateTime, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    user = db.relationship('User', backref=db.backref('posts', lazy=True))
+
+    def __repr__(self):
+        return f"Post('{self.title}', '{self.created_date}')"
 
 @app.route('/', methods=['GET', 'POST'])
-def visitor_homepage():
-    return render_template('visitor_homepage.html')
+def visitor_base():
+    return render_template('visitor_base.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -93,14 +107,16 @@ def register():
 def logout():
     session.pop('user_id', None)
     
-    return redirect(url_for('visitor_homepage'))
+    return redirect(url_for('visitor_base'))
 
 @app.route('/homepage', methods=['GET', 'POST'])
 def homepage():
     if 'user_id' not in session:
         return redirect(url_for('login'))
+    
+    posts = Post.query.all()
 
-    return render_template('homepage.html')
+    return render_template('homepage.html', posts=posts)
 
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
@@ -151,13 +167,36 @@ def changepassword():
 def myblog():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    
-    user = User.query.get(session['user_id'])
 
     if request.method == 'POST':
-        flash("Post Created Successfully!")
+        title = request.form['titleTextarea']
+        content = request.form['contentTextarea']
+        tags = request.form['tagTextarea']
+        user_id = request.form['user_id']
 
-    return render_template('myblog.html')
+        new_post = Post(title=title, content=content, tags=tags, user_id=user_id)
+        db.session.add(new_post)
+        db.session.commit()
+
+        flash("Post Created Successfully!")
+        return redirect(url_for('myblog'))
+
+    posts = Post.query.all()
+    return render_template('myblog.html', posts=posts)
+
+@app.route('/delete_post/<int:post_id>', methods=['GET', 'POST'])
+def delete_post(post_id):
+    post = Post.query.get_or_404(post_id)
+
+    if post.user_id != session['user_id']:
+        flash('You do not have permission to delete this post.')
+        return redirect(url_for('myblog'))
+    
+    db.session.delete(post)
+    db.session.commit()
+    flash('Post Deleted Successfully!')
+
+    return redirect(url_for('myblog'))
 
 if __name__ == "__main__":
     with app.app_context():

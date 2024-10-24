@@ -87,3 +87,17 @@ ul {
 ul p {
     color: #00b427;
 }
+
+.posts-container {
+    margin-top: 20px;
+}
+.post {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+.post h2 {
+    margin: 0 0 10px 0;
+}
