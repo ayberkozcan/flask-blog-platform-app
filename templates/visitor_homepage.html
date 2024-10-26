@@ -6,20 +6,26 @@
 
 <div class="posts-container">
     {% for post in posts %}
-        <div class="post">
-            <h2>{{ post.title }}</h2>
-            <hr>
-            <p>{{ post.content }}</p><br><br>
+        {% if post.ispublic == 'public' %}
+            <div class="post">
+                <h2>{{ post.title }}</h2>
+                <hr>
+                <p>{{ post.content }}</p><br><br>
 
-            <img src="{{ url_for('static', filename='icons/tag_label_blue_icon.png') }}" alt="Tag Label icon" style="width: 20px; height: auto;">
-            <p><strong>{{ post.tags }}</strong></p><br><br>
-            
-            <p>{{ post.user.username }}</p><br><br>
-            <p>{{ post.created_date.strftime('%d %B') }}</p><br><br>
+                <img src="{{ url_for('static', filename='icons/tag_label_blue_icon.png') }}" alt="Tag Label icon" style="width: 20px; height: auto;">
+                <p><strong>{{ post.tags }}</strong></p><br><br>
+                
+                <p>{{ post.user.username }}</p><br><br>
+                <p>{{ post.created_date.strftime('%d %B') }}</p>
+                <!-- <br><br> -->
 
-            <img src="{{ url_for('static', filename='icons/heart_thin_icon.png') }}" alt="Heart icon" style="width: 20px; height: auto; margin-right: 10px;">
-            <img src="{{ url_for('static', filename='icons/saved_icon.png') }}" alt="Saved icon" style="width: 20px; height: auto;">
-        </div>
+                <!-- <img src="{{ url_for('static', filename='icons/heart_thin_icon.png') }}" alt="Heart icon" style="width: 20px; height: auto;">
+                <p style="margin-right: 10px;">{{ post.like_count }}</p>
+                
+                <img src="{{ url_for('static', filename='icons/saved_icon.png') }}" alt="Saved icon" style="width: 20px; height: auto;">
+                <p>{{ post.save_count }}</p> -->
+            </div>
+        {% endif %}
     {% endfor %}
 </div>
 

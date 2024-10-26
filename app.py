@@ -17,12 +17,15 @@ migrate = Migrate(app, db)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    join_date = db.Column(db.DateTime, default=datetime.utcnow)
     username = db.Column(db.String(100), nullable=False)
     password = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), nullable=False)
     age = db.Column(db.Integer, nullable=False)
-    role = db.Column(db.String(100))
+    role = db.Column(db.String(100), default="User")
     description = db.Column(db.Text)
+    liked_post_ids = db.Column(db.JSON)
+    saved_post_ids = db.Column(db.JSON)
 
     def __repr__(self):
         return f"User('{self.username}')"
@@ -34,15 +37,16 @@ class Post(db.Model):
     tags = db.Column(db.String(100))
     created_date = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    ispublic = db.Column(db.Text)
+    like_count = db.Column(db.Integer, default=0)
+    save_count = db.Column(db.Integer, default=0)
+    comment_count = db.Column(db.Integer, default=0)
+    image_url = db.Column(db.String(255))
 
     user = db.relationship('User', backref=db.backref('posts', lazy=True))
 
     def __repr__(self):
         return f"Post('{self.title}', '{self.created_date}')"
-
-# @app.route('/', methods=['GET', 'POST'])
-# def visitor_base():
-#     return render_template('visitor_base.html')
 
 @app.route('/', methods=['GET', 'POST'])
 def visitor_homepage():
@@ -180,12 +184,13 @@ def myblog():
         content = request.form['contentTextarea']
         tags = request.form['tagTextarea']
         user_id = request.form['user_id']
+        visibility = request.form['visibility']
 
         if not title or not content:
             flash("Title and Content cannot be empty!", "error")
             return redirect(url_for('myblog'))
 
-        new_post = Post(title=title, content=content, tags=tags, user_id=user_id)
+        new_post = Post(title=title, content=content, tags=tags, user_id=user_id, ispublic=visibility)
         db.session.add(new_post)
         db.session.commit()
 
