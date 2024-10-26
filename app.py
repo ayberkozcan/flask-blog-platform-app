@@ -40,9 +40,16 @@ class Post(db.Model):
     def __repr__(self):
         return f"Post('{self.title}', '{self.created_date}')"
 
+# @app.route('/', methods=['GET', 'POST'])
+# def visitor_base():
+#     return render_template('visitor_base.html')
+
 @app.route('/', methods=['GET', 'POST'])
-def visitor_base():
-    return render_template('visitor_base.html')
+def visitor_homepage():
+
+    posts = Post.query.all()
+
+    return render_template('visitor_homepage.html', posts=posts)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -107,7 +114,7 @@ def register():
 def logout():
     session.pop('user_id', None)
     
-    return redirect(url_for('visitor_base'))
+    return redirect(url_for('visitor_homepage'))
 
 @app.route('/homepage', methods=['GET', 'POST'])
 def homepage():
@@ -174,6 +181,10 @@ def myblog():
         tags = request.form['tagTextarea']
         user_id = request.form['user_id']
 
+        if not title or not content:
+            flash("Title and Content cannot be empty!", "error")
+            return redirect(url_for('myblog'))
+
         new_post = Post(title=title, content=content, tags=tags, user_id=user_id)
         db.session.add(new_post)
         db.session.commit()
@@ -197,6 +208,15 @@ def delete_post(post_id):
     flash('Post Deleted Successfully!')
 
     return redirect(url_for('myblog'))
+
+@app.route('/settings', methods=['GET', 'POST'])
+def settings():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    user = User.query.get(session['user_id'])
+
+    return render_template('settings.html', user=user)
 
 if __name__ == "__main__":
     with app.app_context():

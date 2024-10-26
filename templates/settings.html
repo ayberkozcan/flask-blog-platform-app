@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}My Blog{% endblock %}
+
+{% block content %}
+
+<div>
+    <button onclick="location.href='/changepassword'">Change Password</button>
+    
+    <br><br><br>
+    <button type="button" class="delete-all-data-button" onclick="confirmDeletion()">Delete All Data</button>
+</div>
+
+<script>
+    function confirmDeletion() {
+        if (confirm('Are you sure you want to delete your ALL data?')) {
+            window.location.href = '/deletedata';
+        }
+    }
+</script>
+
+
+{% endblock %}

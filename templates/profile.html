@@ -1,87 +1,146 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog - Profile</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
+{% block title %}My Blog{% endblock %}
 
-    <script>
+{% block content %}
 
-        function descriptionEdit(){
-            const textarea = document.getElementById('descriptionTextarea');
-            const editButton = document.getElementById('editButton');
-            const saveButton = document.getElementById('saveButton');
-            const descriptionP = document.getElementById('descriptionP');
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog - Profile</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
 
-            if (textarea.style.display === 'none'){
-                textarea.style.display = 'block';
-                editButton.style.display = 'none';
-                saveButton.style.display = 'inline';
-                descriptionP.style.display = "none";
-            }
+<script>
+    function descriptionEdit(){
+        const textarea = document.getElementById('descriptionTextarea');
+        const editButton = document.getElementById('editButton');
+        const saveButton = document.getElementById('saveButton');
+        const descriptionP = document.getElementById('descriptionP');
+
+        if (textarea.style.display === 'none'){
+            textarea.style.display = 'block';
+            editButton.style.display = 'none';
+            saveButton.style.display = 'inline';
+            descriptionP.style.display = "none";
         }
+    }
 
-        function saveChanges(){
-            const textarea = document.getElementById('descriptionTextarea');
-            textarea.style.display = 'none';
-            
-            document.getElementById('descriptionP').style.display = 'inline';
-            document.getElementById('editButton').style.display = 'inline';
-            document.getElementById('saveButton').style.display = 'none';
+    function saveChanges(){
+        const textarea = document.getElementById('descriptionTextarea');
+        textarea.style.display = 'none';
+        
+        document.getElementById('descriptionP').style.display = 'inline';
+        document.getElementById('editButton').style.display = 'inline';
+        document.getElementById('saveButton').style.display = 'none';
+    }
+
+    window.onload = function(){
+        const flashMessages = document.getElementById('flashMessages');
+        if (flashMessages) {
+            setTimeout(() => {
+                flashMessages.style.display = 'none';
+            }, 2000);
         }
+    }
+</script>
 
-        window.onload = function(){
-            const flashMessages = document.getElementById('flashMessages');
-            if (flashMessages) {
-                setTimeout(() => {
-                    flashMessages.style.display = 'none';
-                }, 2000);
-            }
-        }
+<style>
+    .profile-box {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background-color: #f9f9f9;
+        font-family: Arial, sans-serif;
+    }
 
-    </script>
-</head>
+    .profile-row {
+        margin-bottom: 12px;
+    }
 
-<body>
+    .profile-label {
+        font-weight: bold;
+        display: inline-block;
+        width: 100px;
+        color: #333;
+    }
 
-    <h1>Hello {{ user.username }}!</h1>
-    <div class="button-container">
-        <button onclick="location.href='/changepassword'">Change Password</button>
-        <button onclick="location.href='/homepage'">Go Back</button>
+    #descriptionP, #descriptionTextarea {
+        width: 90%;
+        margin-top: 8px;
+    }
+
+    .description-text {
+        width: 80%;
+        max-width: 600px;
+        margin-top: 8px;
+        word-wrap: break-word;
+        color: #333;
+        font-size: 16px;
+    }
+
+
+    #editButton, #saveButton {
+        margin-top: 16px;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    #editButton {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    #saveButton {
+        background-color: #008CBA;
+        color: white;
+        display: none;
+    }
+
+    #editButton:hover, #saveButton:hover {
+        opacity: 0.9;
+    }
+</style>
+
+<div class="profile-box">
+    <h2>Welcome, {{ user.username }}</h2>
+    <div class="profile-row">
+        <label class="profile-label">Username:</label>
+        <p style="display: inline;">{{ user.username }}</p>
     </div>
-    <br><br><br><br><br>
-    <div>
-        <label>Username:</label>
-        <p style="display: inline;">{{ user.username }}</p><br>
-        <label>E-Mail:</label>
-        <p style="display: inline;">{{ user.email }}</p><br>
-        <label>Role:</label>
-        <p style="display: inline;">{{ user.role }}</p><br><br>
-        <label>Description</label>
-        <p id="descriptionP">{{ user.description }}</p>
-        <br><br>
-
-        <form action="/profile" method="POST">
-            <textarea id="descriptionTextarea" name="description" row="4" cols="50" style="display: none;">{{ user.description }}</textarea>
-            <br>
-            
-            <button type="button" id="editButton" onclick="descriptionEdit()">Edit</button>
-            <button type="submit" id="saveButton" style="display: none;" onclick="saveChanges()">Save Changes</button>
-        </form>
+    <div class="profile-row">
+        <label class="profile-label">E-Mail:</label>
+        <p style="display: inline;">{{ user.email }}</p>
     </div>
+    <div class="profile-row">
+        <label class="profile-label">Role:</label>
+        <p style="display: inline;">{{ user.role }}</p>
+    </div>
+    <br><br>
+    <div class="profile-row">
+        <label class="profile-label">Description:</label>
+        <p id="descriptionP" class="description-text">{{ user.description }}</p>
+    </div>    
 
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <ul id="flashMessages">
-            {% for message in messages %}
-                <p>{{ message }}</p>
-            {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
+    <form action="/profile" method="POST">
+        <textarea id="descriptionTextarea" name="description" rows="4" cols="50" style="display: none;">{{ user.description }}</textarea>
+        <button type="button" id="editButton" onclick="descriptionEdit()">Edit Description</button>
+        <button type="submit" id="saveButton" onclick="saveChanges()">Save Changes</button>
+    </form>
+</div>
 
-</body>
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul id="flashMessages">
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
 
-</html>
+
+{% endblock %}
