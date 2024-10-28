@@ -131,8 +131,47 @@ def homepage():
     liked_posts = user.liked_post_ids.split(',')
     saved_posts = user.saved_post_ids.split(',')
 
-    print(liked_posts)
     return render_template('homepage.html', posts=posts, liked_posts=liked_posts, saved_posts=saved_posts)
+
+@app.route('/toggle_like', methods=['POST'])
+def toggle_like():
+    post_id = request.json.get('post_id')
+    action = request.json.get('action')
+
+    post = Post.query.get(post_id)
+    user = User.query.get(session['user_id'])
+
+    if post and user:
+        if action == 'like':
+            post.like_count += 1
+            if post_id not in user.liked_post_ids.split(','):
+                user.liked_post_ids += f"{post_id},"
+        elif action == 'unlike':
+            post.like_count -= 1
+            if post_id in user.liked_post_ids.split(','):
+                user.liked_post_ids = ','.join(
+                    [id for id in user.liked_post_ids.split(',') if id != post_id]
+                )
+        elif action == 'save':
+            post.save_count += 1
+            if post_id not in user.saved_post_ids.split(','):
+                user.saved_post_ids += f"{post_id},"
+        elif action == 'unsave':
+            post.save_count -= 1
+            if post_id in user.saved_post_ids.split(','):
+                user.saved_post_ids = ','.join(
+                    [id for id in user.saved_post_ids.split(',') if id != post_id]
+                )
+
+        db.session.commit()
+        
+        return {
+            'status': 'success', 
+            'like_count': post.like_count,
+            'save_count': post.save_count
+        }
+    else:
+        return {'status': 'error'}, 404
 
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
@@ -151,6 +190,32 @@ def profile():
         return redirect(url_for('profile'))
 
     return render_template('profile.html', user=user)
+
+@app.route('/likedposts', methods=['GET', 'POST'])
+def likedposts():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    user = User.query.get(session['user_id'])
+    posts = Post.query.all()
+
+    liked_posts = user.liked_post_ids.split(',') if user.saved_post_ids else []
+    saved_posts = user.saved_post_ids.split(',') if user.saved_post_ids else []
+
+    return render_template('likedposts.html', user=user, posts=posts, liked_posts=liked_posts, saved_posts=saved_posts)
+
+@app.route('/savedposts', methods=['GET', 'POST'])
+def savedposts():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    user = User.query.get(session['user_id'])
+    posts = Post.query.all()
+
+    liked_posts = user.liked_post_ids.split(',') if user.saved_post_ids else []
+    saved_posts = user.saved_post_ids.split(',') if user.saved_post_ids else []
+
+    return render_template('savedposts.html', user=user, posts=posts, liked_posts=liked_posts, saved_posts=saved_posts)
 
 @app.route('/changepassword', methods=['GET', 'POST'])
 def changepassword():
@@ -227,46 +292,6 @@ def settings():
     user = User.query.get(session['user_id'])
 
     return render_template('settings.html', user=user)
-
-@app.route('/toggle_like', methods=['POST'])
-def toggle_like():
-    post_id = request.json.get('post_id')
-    action = request.json.get('action')
-
-    post = Post.query.get(post_id)
-    user = User.query.get(session['user_id'])
-
-    if post and user:
-        if action == 'like':
-            post.like_count += 1
-            if post_id not in user.liked_post_ids.split(','):
-                user.liked_post_ids += f"{post_id},"
-        elif action == 'unlike':
-            post.like_count -= 1
-            if post_id in user.liked_post_ids.split(','):
-                user.liked_post_ids = ','.join(
-                    [id for id in user.liked_post_ids.split(',') if id != post_id]
-                )
-        elif action == 'save':
-            post.save_count += 1
-            if post_id not in user.saved_post_ids.split(','):
-                user.saved_post_ids += f"{post_id},"
-        elif action == 'unsave':
-            post.save_count -= 1
-            if post_id in user.saved_post_ids.split(','):
-                user.saved_post_ids = ','.join(
-                    [id for id in user.saved_post_ids.split(',') if id != post_id]
-                )
-
-        db.session.commit()
-        
-        return {
-            'status': 'success', 
-            'like_count': post.like_count,
-            'save_count': post.save_count
-        }
-    else:
-        return {'status': 'error'}, 404
 
 if __name__ == "__main__":
     with app.app_context():

@@ -80,7 +80,6 @@
         font-size: 16px;
     }
 
-
     #editButton, #saveButton {
         margin-top: 16px;
         padding: 10px 20px;
@@ -132,6 +131,11 @@
     </form>
 </div>
 
+<div class="profile-box">
+    <button onclick="location.href='/likedposts'">Liked Posts</button>
+    <button onclick="location.href='/savedposts'">Saved Posts</button>
+</div>
+
 {% with messages = get_flashed_messages() %}
     {% if messages %}
         <ul id="flashMessages">
@@ -141,6 +145,5 @@
         </ul>
     {% endif %}
 {% endwith %}
-
 
 {% endblock %}

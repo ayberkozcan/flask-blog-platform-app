@@ -17,13 +17,13 @@
                 
                 <p>{{ post.user.username }}</p><br><br>
                 <p>{{ post.created_date.strftime('%d %B') }}</p>
-                <!-- <br><br> -->
+                <br><br>
 
-                <!-- <img src="{{ url_for('static', filename='icons/heart_thin_icon.png') }}" alt="Heart icon" style="width: 20px; height: auto;">
+                <img src="{{ url_for('static', filename='icons/heart_thin_icon.png') }}" alt="Heart icon" style="width: 20px; height: auto;">
                 <p style="margin-right: 10px;">{{ post.like_count }}</p>
                 
                 <img src="{{ url_for('static', filename='icons/saved_icon.png') }}" alt="Saved icon" style="width: 20px; height: auto;">
-                <p>{{ post.save_count }}</p> -->
+                <p>{{ post.save_count }}</p>
             </div>
         {% endif %}
     {% endfor %}

@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}My Blog{% endblock %}
+
+{% block content %}
+
+<div class="posts-container">
+    {% for post in posts %}
+        {% if post.ispublic == 'public' %}
+            {% if post.id|string in saved_posts %}
+                <div class="post" data-id="{{ post.id }}">
+                    <h2>{{ post.title }}</h2>
+                    <hr>
+                    <p>{{ post.content }}</p><br><br>
+
+                    <img src="{{ url_for('static', filename='icons/tag_label_blue_icon.png') }}" alt="Tag Label icon" style="width: 20px; height: auto;">
+                    <p><strong>{{ post.tags }}</strong></p><br><br>
+                    
+                    <p>{{ post.user.username }}</p><br><br>
+                    <p>{{ post.created_date.strftime('%d %B') }}</p><br><br>
+
+                    <img src="{{ url_for('static', filename='icons/' + ('red_heart_icon.png' if post.id|string in liked_posts else 'heart_thin_icon.png')) }}"
+                        onclick="toggleImage(this, 'heart')" 
+                        style="width: 20px; height: 20px; cursor: pointer;" />
+                    <span class="like-count">{{ post.like_count }}</span>
+                    
+                    <img src="{{ url_for('static', filename='icons/' + ('saved_bookmark_icon.png' if post.id|string in saved_posts else 'saved_icon.png')) }}"
+                        onclick="toggleImage(this, 'save')" 
+                        style="width: 20px; height: 20px; cursor: pointer;" />
+                    <span class="like-count">{{ post.save_count }}</span>
+                </div>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+</div>
+
+<script>
+    function toggleImage(imgElement, type){
+        const currentSrc = imgElement.src;
+        let newSrc;
+        let action;
+
+        if(type === 'heart'){
+            if(currentSrc.includes('heart_thin_icon.png')){
+                newSrc = "{{ url_for('static', filename='icons/red_heart_icon.png') }}";
+                action = 'like';
+            }
+            else{
+                newSrc = "{{ url_for('static', filename='icons/heart_thin_icon.png') }}";
+                action = 'unlike';
+            }
+        }
+
+        if(type === 'save'){
+            if(currentSrc.includes('saved_icon.png')){
+                newSrc = "{{ url_for('static', filename='icons/saved_bookmark_icon.png') }}";
+                action = 'save';
+            }
+            else{
+                newSrc = "{{ url_for('static', filename='icons/saved_icon.png') }}";
+                action = 'unsave';
+            }
+        }
+        imgElement.src = newSrc;
+
+        const postId = imgElement.closest('.post').getAttribute('data-id');
+        
+        fetch("{{ url_for('toggle_like') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ post_id: postId, action: action })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.status === 'success'){
+                if (type === 'heart') {
+                    imgElement.nextElementSibling.textContent = data.like_count;
+                } else if (type === 'save') {
+                    imgElement.nextElementSibling.textContent = data.save_count;
+                }
+            }
+        });
+    }
+
+</script>
+
+{% endblock %}
