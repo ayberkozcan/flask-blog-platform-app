@@ -27,7 +27,7 @@
                     <img src="{{ url_for('static', filename='icons/' + ('saved_bookmark_icon.png' if post.id|string in saved_posts else 'saved_icon.png')) }}"
                         onclick="toggleImage(this, 'save')" 
                         style="width: 20px; height: 20px; cursor: pointer;" />
-                    <span class="like-count">{{ post.save_count }}</span>
+                    <span class="save-count">{{ post.save_count }}</span>
                 </div>
             {% endif %}
         {% endif %}

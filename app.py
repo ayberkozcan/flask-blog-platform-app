@@ -1,8 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, make_response, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_migrate import Migrate
 from datetime import datetime
+import os
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
@@ -10,6 +12,7 @@ app.secret_key = '123'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['UPLOAD_PP_FOLDER'] = 'static/profile_pics'
 
 db = SQLAlchemy(app)
 
@@ -26,6 +29,7 @@ class User(db.Model):
     description = db.Column(db.Text)
     liked_post_ids = db.Column(db.Text, default="")
     saved_post_ids = db.Column(db.Text, default="")
+    profile_pic_url = db.Column(db.String(255))
 
     def __repr__(self):
         return f"User('{self.username}')"
@@ -71,11 +75,17 @@ def login():
             flash("Incorrect Password!")
             return render_template('login.html')
         
+        response = make_response(redirect(url_for('homepage')))
+        response.set_cookie('email', email, max_age=60*60*24*30)
+        response.set_cookie('password', password, max_age=60*60*24*30)
+
         session['user_id'] = user.id
 
-        return redirect(url_for('homepage'))
+        return response
 
-    return render_template('login.html')
+    saved_email = request.cookies.get('email', '')
+    saved_password = request.cookies.get('password', '')
+    return render_template('login.html', saved_email=saved_email, saved_password=saved_password)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -191,6 +201,26 @@ def profile():
 
     return render_template('profile.html', user=user)
 
+@app.route('/uploadpp', methods=['POST'])
+def upload_pp():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    user = User.query.get(session['user_id'])
+    profile_pic = request.files['profile_pic']
+
+    if profile_pic:
+        filename = secure_filename(profile_pic.filename)
+        filepath = os.path.join(app.config['UPLOAD_PP_FOLDER'], filename)
+        profile_pic.save(filepath)
+
+        user.profile_pic_url = filename
+        db.session.commit()
+
+        flash("Picture Uploaded!")
+    
+    return render_template('profile.html', user=user)
+
 @app.route('/likedposts', methods=['GET', 'POST'])
 def likedposts():
     if 'user_id' not in session:
@@ -199,7 +229,7 @@ def likedposts():
     user = User.query.get(session['user_id'])
     posts = Post.query.all()
 
-    liked_posts = user.liked_post_ids.split(',') if user.saved_post_ids else []
+    liked_posts = user.liked_post_ids.split(',') if user.liked_post_ids else []
     saved_posts = user.saved_post_ids.split(',') if user.saved_post_ids else []
 
     return render_template('likedposts.html', user=user, posts=posts, liked_posts=liked_posts, saved_posts=saved_posts)
@@ -212,7 +242,7 @@ def savedposts():
     user = User.query.get(session['user_id'])
     posts = Post.query.all()
 
-    liked_posts = user.liked_post_ids.split(',') if user.saved_post_ids else []
+    liked_posts = user.liked_post_ids.split(',') if user.liked_post_ids else []
     saved_posts = user.saved_post_ids.split(',') if user.saved_post_ids else []
 
     return render_template('savedposts.html', user=user, posts=posts, liked_posts=liked_posts, saved_posts=saved_posts)
