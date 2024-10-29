@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Post{% endblock %}
+
+{% block content %}
+
+<div class="textarea-container">
+    <form action="{{ url_for('edit_post', post_id=post.id) }}" method="POST">
+        <textarea id="titleTextarea" name="titleTextarea">{{ post.title }}</textarea>
+        <textarea id="contentTextarea" name="contentTextarea">{{ post.content }}</textarea>
+        <textarea id="tagTextarea" name="tagTextarea">{{ post.tags }}</textarea>
+        
+        <div id="visibility-container">
+            <label for="public">Public</label>
+            <input type="radio" id="public" name="visibility" value="public" {% if post.ispublic == 'public' %}checked{% endif %}>
+            <label for="private">Private</label>
+            <input type="radio" id="private" name="visibility" value="private" {% if post.ispublic == 'private' %}checked{% endif %}>
+        </div>
+    
+        <button type="submit">Save Changes</button>
+    </form>
+</div>
+
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul id="flashMessages">
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+
+<script>
+    window.onload = function(){
+        const flashMessages = document.getElementById('flashMessages');
+        if (flashMessages) {
+            setTimeout(() => {
+                flashMessages.style.display = 'none';
+            }, 2000);
+        }
+    }
+</script>
+
+{% endblock %}

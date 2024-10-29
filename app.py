@@ -298,7 +298,30 @@ def myblog():
         return redirect(url_for('myblog'))
 
     posts = Post.query.all()
-    return render_template('myblog.html', posts=posts)
+    user = User.query.get(session['user_id'])
+    
+    liked_posts = user.liked_post_ids.split(',')
+    saved_posts = user.saved_post_ids.split(',')
+
+    return render_template('myblog.html', posts=posts, liked_posts=liked_posts, saved_posts=saved_posts)
+
+    # return render_template('myblog.html', posts=posts)
+
+@app.route('/edit_post/<int:post_id>', methods=['GET', 'POST'])
+def edit_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    if request.method == 'POST':
+        post.title = request.form['titleTextarea']
+        post.content = request.form['contentTextarea']
+        post.tags = request.form['tagTextarea']
+        post.ispublic = request.form['visibility']
+        
+        db.session.commit()
+        flash('Post successfully updated!')
+        return redirect(url_for('myblog'))
+    
+    return render_template('editpost.html', post=post)
+
 
 @app.route('/delete_post/<int:post_id>', methods=['GET', 'POST'])
 def delete_post(post_id):
