@@ -183,6 +183,13 @@ def toggle_like():
     else:
         return {'status': 'error'}, 404
 
+@app.route('/comment', methods=['GET', 'POST'])
+def comment():
+
+    # Database operations here
+
+    return redirect(url_for('homepage'))
+
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
     if 'user_id' not in session:

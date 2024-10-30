@@ -27,6 +27,16 @@
                     onclick="toggleImage(this, 'save')" 
                     style="width: 20px; height: 20px; cursor: pointer;" />
                 <span class="like-count">{{ post.save_count }}</span>
+
+                <br><br>
+
+                <form action="/comment" method="POST">
+                    <p id="commentp" onclick="commentPost()" style="cursor: pointer;">Comment</p>
+                    <textarea id="commentTextarea" name="commentTextarea" style="display: none;" placeholder="Comment..."></textarea>
+                    <br>
+                    <button type="submit" id="commentbutton" style="display: none;" onclick="commentPostSubmit()">Submit</button>
+                    <button type="button" id="commentgobackbutton" style="display: none;" onclick="commentPostSubmit()">Go Back</button>
+                </form>
             </div>
         {% endif %}
     {% endfor %}
@@ -80,6 +90,20 @@
                 }
             }
         });
+    }
+
+    function commentPost(){
+        document.getElementById('commentp').style.display = 'none';
+        document.getElementById('commentTextarea').style.display = 'inline';
+        document.getElementById('commentbutton').style.display = 'inline';
+        document.getElementById('commentgobackbutton').style.display = 'inline';
+    }
+
+    function commentPostSubmit(){
+        document.getElementById('commentp').style.display = 'inline';
+        document.getElementById('commentTextarea').style.display = 'none';
+        document.getElementById('commentbutton').style.display = 'none';
+        document.getElementById('commentgobackbutton').style.display = 'none';
     }
 
 </script>
