@@ -45,12 +45,26 @@ class Post(db.Model):
     like_count = db.Column(db.Integer, default=0)
     save_count = db.Column(db.Integer, default=0)
     comment_count = db.Column(db.Integer, default=0)
+
     image_url = db.Column(db.String(255))
 
     user = db.relationship('User', backref=db.backref('posts', lazy=True))
 
     def __repr__(self):
         return f"Post('{self.title}', '{self.created_date}')"
+    
+class Comment(db.Model):
+    comment_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    content = db.Column(db.String(200))
+
+    user = db.relationship('User', backref=db.backref('comments', lazy=True))
+    post = db.relationship('Post', backref=db.backref('comments', lazy=True))
+
+    def __repr__(self):
+        return f"Comment('{self.content[:20]}', '{self.created_at}')"
 
 @app.route('/', methods=['GET', 'POST'])
 def visitor_homepage():
@@ -183,10 +197,19 @@ def toggle_like():
     else:
         return {'status': 'error'}, 404
 
-@app.route('/comment', methods=['GET', 'POST'])
-def comment():
+@app.route('/comment/<int:post_id>', methods=['GET', 'POST'])
+def comment(post_id):
+    if request.method == 'POST':
+        content = request.form['commentTextarea']
 
-    # Database operations here
+        user_id = session['user_id']
+        if not content:
+            flash('Content cannot be empty!', "error")
+            return redirect(url_for('homepage'))
+
+        new_comment = Comment(content=content, post_id=post_id, user_id=user_id)
+        db.session.add(new_comment)
+        db.session.commit()
 
     return redirect(url_for('homepage'))
 
