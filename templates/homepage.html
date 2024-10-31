@@ -30,9 +30,12 @@
 
                 <br><br>
 
-                <form action="/comment" method="POST">
-                    <p id="commentp" onclick="commentPost()" style="cursor: pointer;">Comment</p>
+                <form action="{{ url_for('comment', post_id=post.id) }}" method="POST">
+                    <p id="commentp" onclick="commentPost()" style="cursor: pointer;">Leave a Comment</p>
                     <textarea id="commentTextarea" name="commentTextarea" style="display: none;" placeholder="Comment..."></textarea>
+
+                    <input type="hidden" name="post_id" value="{{ post.id }}">
+
                     <br>
                     <button type="submit" id="commentbutton" style="display: none;" onclick="commentPostSubmit()">Submit</button>
                     <button type="button" id="commentgobackbutton" style="display: none;" onclick="commentPostSubmit()">Go Back</button>
