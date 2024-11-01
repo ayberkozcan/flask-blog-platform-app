@@ -30,7 +30,9 @@
 
                 <br><br>
 
-                <form action="{{ url_for('comment', post_id=post.id) }}" method="POST">
+                <a href="{{ url_for('post', post_id=post.id) }}">See Comments</a>
+
+                <!-- <form action="{{ url_for('comment', post_id=post.id) }}" method="POST">
                     <p id="commentp" onclick="commentPost()" style="cursor: pointer;">Leave a Comment</p>
                     <textarea id="commentTextarea" name="commentTextarea" style="display: none;" placeholder="Comment..."></textarea>
 
@@ -39,7 +41,7 @@
                     <br>
                     <button type="submit" id="commentbutton" style="display: none;" onclick="commentPostSubmit()">Submit</button>
                     <button type="button" id="commentgobackbutton" style="display: none;" onclick="commentPostSubmit()">Go Back</button>
-                </form>
+                </form> -->
             </div>
         {% endif %}
     {% endfor %}

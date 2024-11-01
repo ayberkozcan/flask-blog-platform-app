@@ -197,6 +197,28 @@ def toggle_like():
     else:
         return {'status': 'error'}, 404
 
+@app.route('/post/<int:post_id>', methods=['GET', 'POST'])
+def post(post_id):
+    
+    user = User.query.get(session['user_id'])
+    user_id = user.id
+
+    posts = Post.query.all()
+    post = Post.query.get_or_404(post_id)
+
+    comments = Comment.query.filter_by(post_id=post_id).all()
+
+    return render_template("post.html", posts=posts, post=post, post_id=post_id, comments=comments, user_id=user_id)
+
+@app.route('/deletecomment/<int:post_id>/<int:comment_id>', methods=['POST'])
+def deletecomment(post_id, comment_id):
+    comment = Comment.query.get_or_404(comment_id)
+
+    db.session.delete(comment)
+    db.session.commit()
+
+    return redirect(url_for('post', post_id=post_id))
+
 @app.route('/comment/<int:post_id>', methods=['GET', 'POST'])
 def comment(post_id):
     if request.method == 'POST':
@@ -206,6 +228,9 @@ def comment(post_id):
         if not content:
             flash('Content cannot be empty!', "error")
             return redirect(url_for('homepage'))
+
+        post = Post.query.get_or_404(post_id)
+        post.comment_count += 1
 
         new_comment = Comment(content=content, post_id=post_id, user_id=user_id)
         db.session.add(new_comment)
@@ -242,8 +267,11 @@ def upload_pp():
     if profile_pic:
         filename = secure_filename(profile_pic.filename)
         filepath = os.path.join(app.config['UPLOAD_PP_FOLDER'], filename)
+        
+        if not os.path.exists(app.config['UPLOAD_PP_FOLDER']):
+            os.makedirs(app.config['UPLOAD_PP_FOLDER'])
+        
         profile_pic.save(filepath)
-
         user.profile_pic_url = filename
         db.session.commit()
 

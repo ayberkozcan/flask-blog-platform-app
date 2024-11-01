@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}My Blog{% endblock %}
+
+{% block content %}
+
+<div class="posts-container">
+    {% for post in posts %}
+        {% if post.ispublic == 'public' %}
+            {% if post.id == post_id %}
+                <div class="post" data-id="{{ post.id }}">
+                    <h2>{{ post.title }}</h2>
+                    <hr>
+                    <p>{{ post.content }}</p><br><br>
+
+                    <img src="{{ url_for('static', filename='icons/tag_label_blue_icon.png') }}" alt="Tag Label icon" style="width: 20px; height: auto;">
+                    <p><strong>{{ post.tags }}</strong></p><br><br>
+                    
+                    <p>{{ post.user.username }}</p><br><br>
+                    <p>{{ post.created_date.strftime('%d %B') }}</p><br><br>
+
+                    <img src="{{ url_for('static', filename='icons/' + ('red_heart_icon.png' if post.id|string in liked_posts else 'heart_thin_icon.png')) }}"
+                        onclick="toggleImage(this, 'heart')" 
+                        style="width: 20px; height: 20px; cursor: pointer;" />
+                    <span class="like-count">{{ post.like_count }}</span>
+                    
+                    <img src="{{ url_for('static', filename='icons/' + ('saved_bookmark_icon.png' if post.id|string in saved_posts else 'saved_icon.png')) }}"
+                        onclick="toggleImage(this, 'save')" 
+                        style="width: 20px; height: 20px; cursor: pointer;" />
+                    <span class="like-count">{{ post.save_count }}</span>
+
+                    <br><br>
+
+                    <form action="{{ url_for('comment', post_id=post.id) }}" method="POST">
+                        <p id="commentp" onclick="commentPost()" style="cursor: pointer;">Leave a Comment</p>
+                        <textarea id="commentTextarea" name="commentTextarea" style="display: none;" placeholder="Comment..."></textarea>
+
+                        <input type="hidden" name="post_id" value="{{ post.id }}">
+
+                        <br>
+                        <button type="submit" id="commentbutton" style="display: none;" onclick="commentPostSubmit()">Submit</button>
+                        <button type="button" id="commentgobackbutton" style="display: none;" onclick="commentPostSubmit()">Go Back</button>
+                    </form>
+                </div>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+</div>
+
+<div class="comments">
+    <h3>Comments ({{ post.comment_count }})</h3>
+    {% for comment in comments %}
+        <div class="comment">
+            <div class="comment-header">
+                <img src="{{ url_for('static', filename='profile_pics/' + (comment.user.profile_pic_url or 'default.jpg')) }}" alt="User Profile Picture" class="profile-pic">
+                <p class="username">{{ comment.user.username }}</p>
+                <span class="comment-date">{{ comment.created_at.strftime('%Y-%m-%d') }}</span>
+            </div>
+            <p class="comment-content">{{ comment.content }}</p>
+            {% if comment.user_id == user_id %}
+                <form action="{{ url_for('deletecomment', post_id=post_id, comment_id=comment.comment_id) }}" method="POST">
+                    <button type="submit" name="deletecomment">Delete Comment</button>
+                </form>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
+
+<script>
+    function toggleImage(imgElement, type){
+        const currentSrc = imgElement.src;
+        let newSrc;
+        let action;
+
+        if(type === 'heart'){
+            if(currentSrc.includes('heart_thin_icon.png')){
+                newSrc = "{{ url_for('static', filename='icons/red_heart_icon.png') }}";
+                action = 'like';
+            }
+            else{
+                newSrc = "{{ url_for('static', filename='icons/heart_thin_icon.png') }}";
+                action = 'unlike';
+            }
+        }
+
+        if(type === 'save'){
+            if(currentSrc.includes('saved_icon.png')){
+                newSrc = "{{ url_for('static', filename='icons/saved_bookmark_icon.png') }}";
+                action = 'save';
+            }
+            else{
+                newSrc = "{{ url_for('static', filename='icons/saved_icon.png') }}";
+                action = 'unsave';
+            }
+        }
+        imgElement.src = newSrc;
+
+        const postId = imgElement.closest('.post').getAttribute('data-id');
+        
+        fetch("{{ url_for('toggle_like') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ post_id: postId, action: action })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.status === 'success'){
+                if (type === 'heart') {
+                    imgElement.nextElementSibling.textContent = data.like_count;
+                } else if (type === 'save') {
+                    imgElement.nextElementSibling.textContent = data.save_count;
+                }
+            }
+        });
+    }
+
+    function commentPost(){
+        document.getElementById('commentp').style.display = 'none';
+        document.getElementById('commentTextarea').style.display = 'inline';
+        document.getElementById('commentbutton').style.display = 'inline';
+        document.getElementById('commentgobackbutton').style.display = 'inline';
+    }
+
+    function commentPostSubmit(){
+        document.getElementById('commentp').style.display = 'inline';
+        document.getElementById('commentTextarea').style.display = 'none';
+        document.getElementById('commentbutton').style.display = 'none';
+        document.getElementById('commentgobackbutton').style.display = 'none';
+    }
+
+</script>
+
+{% endblock %}

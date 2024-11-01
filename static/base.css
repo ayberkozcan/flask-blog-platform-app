@@ -116,3 +116,51 @@ ul p {
 .delete-all-data-button:hover {
     background-color: darkred;
 }
+
+.comments {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.comments h3 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.comment {
+    border-bottom: 1px solid #ddd;
+    padding: 8px 0;
+}
+
+.comment-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.profile-pic {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.username {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.comment-date {
+    font-size: 12px;
+    color: #888;
+    margin-left: auto;
+}
+
+.comment-content {
+    font-size: 14px;
+    color: #444;
+    margin-top: 5px;
+}
