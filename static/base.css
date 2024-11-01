@@ -16,7 +16,7 @@ h1 {
 }
 
 button {
-    background-color: #007bff;
+    background-color: #6046ff;
     color: white;
     border: none;
     padding: 10px 15px;
@@ -26,7 +26,7 @@ button {
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #4b36cc;
 }
 
 label {
@@ -60,7 +60,7 @@ textarea {
 }
 
 textarea:focus {
-    border-color: #007bff;
+    border-color: #6046ff;
     outline: none;
 }
 
@@ -163,4 +163,31 @@ ul p {
     font-size: 14px;
     color: #444;
     margin-top: 5px;
+}
+
+.search-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+}
+
+#postsearch {
+    flex-grow: 1;
+    padding: 10px;
+    border-radius: 5px;
+    outline: none;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+.search-button {
+    width: 80px;
+    height: 36px;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s, border-color 0.3s;
 }

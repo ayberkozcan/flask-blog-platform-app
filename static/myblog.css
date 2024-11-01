@@ -22,7 +22,7 @@ textarea {
 }
 
 button {
-    background-color: #007BFF;
+    background-color: #6046ff;
     color: white;
     padding: 10px 20px;
     margin-top: 10px;
@@ -32,5 +32,5 @@ button {
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #4b36cc;
 }

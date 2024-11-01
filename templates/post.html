@@ -5,6 +5,10 @@
 {% block content %}
 
 <div class="posts-container">
+    <div class="textarea-container">
+        <button onclick="location.href='/homepage'">Go Back</button>
+    </div>
+
     {% for post in posts %}
         {% if post.ispublic == 'public' %}
             {% if post.id == post_id %}

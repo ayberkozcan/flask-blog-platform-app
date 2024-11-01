@@ -150,7 +150,13 @@ def homepage():
         return redirect(url_for('login'))
     
     user = User.query.get(session['user_id'])
-    posts = Post.query.all()
+
+    search_term = request.form.get('postsearch', '').strip()
+
+    if search_term:
+        posts = Post.query.filter(Post.title.ilike(f'%{search_term}%'), Post.ispublic == 'public').all()
+    else:
+        posts = Post.query.all()
 
     liked_posts = user.liked_post_ids.split(',')
     saved_posts = user.saved_post_ids.split(',')
@@ -344,9 +350,9 @@ def myblog():
         user_id = request.form['user_id']
         visibility = request.form['visibility']
 
-        if not title or not content:
-            flash("Title and Content cannot be empty!", "error")
-            return redirect(url_for('myblog'))
+        # if not title or not content:
+        #     flash("Title and Content cannot be empty!", "error")
+        #     return redirect(url_for('myblog'))
 
         new_post = Post(title=title, content=content, tags=tags, user_id=user_id, ispublic=visibility)
         db.session.add(new_post)

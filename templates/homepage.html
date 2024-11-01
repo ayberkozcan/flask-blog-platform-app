@@ -5,6 +5,15 @@
 {% block content %}
 
 <div class="posts-container">
+    <div class="search-container">
+        <form action="/homepage" method="POST">
+            <input type="text" id="postsearch" name="postsearch" placeholder="Search for a Post..." required>
+            <button type="submit" class="search-button">Search</button>
+        </form>
+    </div>
+
+    <h2>{{ 'No posts found' if not posts else 'Newest Posts' }}</h2>
+    
     {% for post in posts %}
         {% if post.ispublic == 'public' %}
             <div class="post" data-id="{{ post.id }}">

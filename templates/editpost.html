@@ -6,9 +6,12 @@
 
 <div class="textarea-container">
     <form action="{{ url_for('edit_post', post_id=post.id) }}" method="POST">
-        <textarea id="titleTextarea" name="titleTextarea">{{ post.title }}</textarea>
-        <textarea id="contentTextarea" name="contentTextarea">{{ post.content }}</textarea>
-        <textarea id="tagTextarea" name="tagTextarea">{{ post.tags }}</textarea>
+        <p>Title</p><br>
+        <textarea id="titleTextarea" name="titleTextarea">{{ post.title }}</textarea><br>
+        <p>Content</p><br>
+        <textarea id="contentTextarea" name="contentTextarea">{{ post.content }}</textarea><br>
+        <p>Tag</p><br>
+        <textarea id="tagTextarea" name="tagTextarea">{{ post.tags }}</textarea><br>
         
         <div id="visibility-container">
             <label for="public">Public</label>
@@ -17,8 +20,10 @@
             <input type="radio" id="private" name="visibility" value="private" {% if post.ispublic == 'private' %}checked{% endif %}>
         </div>
     
+        <br>
         <button type="submit">Save Changes</button>
     </form>
+    <button onclick="location.href='/myblog'">Go Back</button>
 </div>
 
 {% with messages = get_flashed_messages() %}
