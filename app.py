@@ -163,6 +163,27 @@ def homepage():
 
     return render_template('homepage.html', posts=posts, liked_posts=liked_posts, saved_posts=saved_posts)
 
+@app.route('/taggedposts/<string:post_tag>', methods=['GET', 'POST'])
+def taggedposts(post_tag):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    user = User.query.get(session['user_id'])
+
+    search_term = request.form.get('postsearch', '').strip()
+
+    if search_term:
+        posts = Post.query.filter(Post.title.ilike(f'%{search_term}%'), Post.ispublic == 'public').all()
+    else:
+        posts = Post.query.all()
+
+    liked_posts = user.liked_post_ids.split(',')
+    saved_posts = user.saved_post_ids.split(',')
+
+    tag = post_tag
+
+    return render_template('homepage.html', posts=posts, liked_posts=liked_posts, saved_posts=saved_posts, tag=tag)
+
 @app.route('/toggle_like', methods=['POST'])
 def toggle_like():
     post_id = request.json.get('post_id')
@@ -214,7 +235,10 @@ def post(post_id):
 
     comments = Comment.query.filter_by(post_id=post_id).all()
 
-    return render_template("post.html", posts=posts, post=post, post_id=post_id, comments=comments, user_id=user_id)
+    liked_posts = user.liked_post_ids.split(',')
+    saved_posts = user.saved_post_ids.split(',')
+
+    return render_template("post.html", posts=posts, post=post, post_id=post_id, comments=comments, user_id=user_id, liked_posts=liked_posts, saved_posts=saved_posts)
 
 @app.route('/deletecomment/<int:post_id>/<int:comment_id>', methods=['POST'])
 def deletecomment(post_id, comment_id):
@@ -285,31 +309,58 @@ def upload_pp():
     
     return render_template('profile.html', user=user)
 
-@app.route('/likedposts', methods=['GET', 'POST'])
-def likedposts():
+# @app.route('/likedposts', methods=['GET', 'POST'])
+# def likedposts():
+#     if 'user_id' not in session:
+#         return redirect(url_for('login'))
+    
+#     user = User.query.get(session['user_id'])
+#     posts = Post.query.all()
+
+#     liked_posts = user.liked_post_ids.split(',') if user.liked_post_ids else []
+#     saved_posts = user.saved_post_ids.split(',') if user.saved_post_ids else []
+
+#     return render_template('likedposts.html', user=user, posts=posts, liked_posts=liked_posts, saved_posts=saved_posts)
+
+# @app.route('/savedposts', methods=['GET', 'POST'])
+# def savedposts():
+#     if 'user_id' not in session:
+#         return redirect(url_for('login'))
+    
+#     user = User.query.get(session['user_id'])
+#     posts = Post.query.all()
+
+#     liked_posts = user.liked_post_ids.split(',') if user.liked_post_ids else []
+#     saved_posts = user.saved_post_ids.split(',') if user.saved_post_ids else []
+
+#     return render_template('savedposts.html', user=user, posts=posts, liked_posts=liked_posts, saved_posts=saved_posts)
+
+@app.route('/likedsavedposts/<string:type>', methods=['GET', 'POST'])
+def likedsavedposts(type):
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    
+
     user = User.query.get(session['user_id'])
     posts = Post.query.all()
 
     liked_posts = user.liked_post_ids.split(',') if user.liked_post_ids else []
     saved_posts = user.saved_post_ids.split(',') if user.saved_post_ids else []
 
-    return render_template('likedposts.html', user=user, posts=posts, liked_posts=liked_posts, saved_posts=saved_posts)
+    page_title = "Liked Posts" if type == "liked" else "Saved Posts"
 
-@app.route('/savedposts', methods=['GET', 'POST'])
-def savedposts():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-    
-    user = User.query.get(session['user_id'])
-    posts = Post.query.all()
+    if type == "liked":
+        filtered_posts = [post for post in posts if str(post.id) in liked_posts]
+    else:
+        filtered_posts = [post for post in posts if str(post.id) in saved_posts]
 
-    liked_posts = user.liked_post_ids.split(',') if user.liked_post_ids else []
-    saved_posts = user.saved_post_ids.split(',') if user.saved_post_ids else []
-
-    return render_template('savedposts.html', user=user, posts=posts, liked_posts=liked_posts, saved_posts=saved_posts)
+    return render_template(
+        'likedsavedposts.html', 
+        user=user, 
+        posts=filtered_posts, 
+        liked_posts=liked_posts, 
+        saved_posts=saved_posts, 
+        page_title=page_title
+    )
 
 @app.route('/changepassword', methods=['GET', 'POST'])
 def changepassword():

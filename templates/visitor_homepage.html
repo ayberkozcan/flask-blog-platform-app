@@ -15,6 +15,7 @@
                 <img src="{{ url_for('static', filename='icons/tag_label_blue_icon.png') }}" alt="Tag Label icon" style="width: 20px; height: auto;">
                 <p><strong>{{ post.tags }}</strong></p><br><br>
                 
+                <img src="{{ url_for('static', filename='profile_pics/' + (post.user.profile_pic_url or 'default.jpg')) }}" alt="User Profile Picture" class="profile-pic">
                 <p>{{ post.user.username }}</p><br><br>
                 <p>{{ post.created_date.strftime('%d %B') }}</p>
                 <br><br>

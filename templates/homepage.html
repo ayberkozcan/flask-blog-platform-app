@@ -16,42 +16,48 @@
     
     {% for post in posts %}
         {% if post.ispublic == 'public' %}
-            <div class="post" data-id="{{ post.id }}">
-                <h2>{{ post.title }}</h2>
-                <hr>
-                <p>{{ post.content }}</p><br><br>
+            {% if not tag or post.tags == tag %}
+                <div class="post" data-id="{{ post.id }}">
+                    <h2>{{ post.title }}</h2>
+                    <hr>
+                    <p>{{ post.content }}</p><br><br>
 
-                <img src="{{ url_for('static', filename='icons/tag_label_blue_icon.png') }}" alt="Tag Label icon" style="width: 20px; height: auto;">
-                <p><strong>{{ post.tags }}</strong></p><br><br>
-                
-                <p>{{ post.user.username }}</p><br><br>
-                <p>{{ post.created_date.strftime('%d %B') }}</p><br><br>
+                    <img src="{{ url_for('static', filename='icons/tag_label_blue_icon.png') }}" alt="Tag Label icon" style="width: 20px; height: auto;">
+                    <!-- <p><strong>{{ post.tags }}</strong></p> -->
+                    
+                    <a href="{{ url_for('taggedposts', post_tag=post.tags) }}">{{ post.tags }}</a>
+                    <br><br>
 
-                <img src="{{ url_for('static', filename='icons/' + ('red_heart_icon.png' if post.id|string in liked_posts else 'heart_thin_icon.png')) }}"
-                    onclick="toggleImage(this, 'heart')" 
-                    style="width: 20px; height: 20px; cursor: pointer;" />
-                <span class="like-count">{{ post.like_count }}</span>
-                
-                <img src="{{ url_for('static', filename='icons/' + ('saved_bookmark_icon.png' if post.id|string in saved_posts else 'saved_icon.png')) }}"
-                    onclick="toggleImage(this, 'save')" 
-                    style="width: 20px; height: 20px; cursor: pointer;" />
-                <span class="like-count">{{ post.save_count }}</span>
+                    <img src="{{ url_for('static', filename='profile_pics/' + (post.user.profile_pic_url or 'default.jpg')) }}" alt="User Profile Picture" class="profile-pic">
+                    <p>{{ post.user.username }}</p><br><br>
+                    <p>{{ post.created_date.strftime('%d %B') }}</p><br><br>
 
-                <br><br>
+                    <img src="{{ url_for('static', filename='icons/' + ('red_heart_icon.png' if post.id|string in liked_posts else 'heart_thin_icon.png')) }}"
+                        onclick="toggleImage(this, 'heart')" 
+                        style="width: 20px; height: 20px; cursor: pointer;" />
+                    <span class="like-count">{{ post.like_count }}</span>
+                    
+                    <img src="{{ url_for('static', filename='icons/' + ('saved_bookmark_icon.png' if post.id|string in saved_posts else 'saved_icon.png')) }}"
+                        onclick="toggleImage(this, 'save')" 
+                        style="width: 20px; height: 20px; cursor: pointer;" />
+                    <span class="like-count">{{ post.save_count }}</span>
 
-                <a href="{{ url_for('post', post_id=post.id) }}">See Comments</a>
+                    <br><br>
 
-                <!-- <form action="{{ url_for('comment', post_id=post.id) }}" method="POST">
-                    <p id="commentp" onclick="commentPost()" style="cursor: pointer;">Leave a Comment</p>
-                    <textarea id="commentTextarea" name="commentTextarea" style="display: none;" placeholder="Comment..."></textarea>
+                    <a href="{{ url_for('post', post_id=post.id) }}">See Comments</a>
 
-                    <input type="hidden" name="post_id" value="{{ post.id }}">
+                    <!-- <form action="{{ url_for('comment', post_id=post.id) }}" method="POST">
+                        <p id="commentp" onclick="commentPost()" style="cursor: pointer;">Leave a Comment</p>
+                        <textarea id="commentTextarea" name="commentTextarea" style="display: none;" placeholder="Comment..."></textarea>
 
-                    <br>
-                    <button type="submit" id="commentbutton" style="display: none;" onclick="commentPostSubmit()">Submit</button>
-                    <button type="button" id="commentgobackbutton" style="display: none;" onclick="commentPostSubmit()">Go Back</button>
-                </form> -->
-            </div>
+                        <input type="hidden" name="post_id" value="{{ post.id }}">
+
+                        <br>
+                        <button type="submit" id="commentbutton" style="display: none;" onclick="commentPostSubmit()">Submit</button>
+                        <button type="button" id="commentgobackbutton" style="display: none;" onclick="commentPostSubmit()">Go Back</button>
+                    </form> -->
+                </div>
+            {% endif %}
         {% endif %}
     {% endfor %}
 </div>
