@@ -13,6 +13,7 @@ app.secret_key = '123'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_PP_FOLDER'] = 'static/profile_pics'
+app.config['UPLOAD_IMAGE_FOLDER'] = 'static/image'
 
 db = SQLAlchemy(app)
 
@@ -400,12 +401,28 @@ def myblog():
         tags = request.form['tagTextarea']
         user_id = request.form['user_id']
         visibility = request.form['visibility']
+        image = request.files.get('imageUpload')
 
-        # if not title or not content:
-        #     flash("Title and Content cannot be empty!", "error")
-        #     return redirect(url_for('myblog'))
+        image_url = None
 
-        new_post = Post(title=title, content=content, tags=tags, user_id=user_id, ispublic=visibility)
+        if image:
+            filename = secure_filename(image.filename)
+            filepath = os.path.join(app.config['UPLOAD_IMAGE_FOLDER'], filename)
+
+            if not os.path.exists(app.config['UPLOAD_IMAGE_FOLDER']):
+                os.makedirs(app.config['UPLOAD_IMAGE_FOLDER'])
+
+            image.save(filepath)
+            image_url = filename
+
+        new_post = Post(
+            title=title,
+            content=content,
+            tags=tags,
+            user_id=user_id,
+            ispublic=visibility,
+            image_url=image_url
+        )
         db.session.add(new_post)
         db.session.commit()
 
@@ -430,6 +447,20 @@ def edit_post(post_id):
         post.content = request.form['contentTextarea']
         post.tags = request.form['tagTextarea']
         post.ispublic = request.form['visibility']
+        
+        if 'imageUpload' in request.files:
+            image_file = request.files['imageUpload']
+            if image_file and image_file.filename != '':
+                if post.image_url:
+                    old_image_path = os.path.join(app.config['UPLOAD_IMAGE_FOLDER'], post.image_url)
+                    if os.path.exists(old_image_path):
+                        os.remove(old_image_path)
+
+                filename = secure_filename(image_file.filename)
+                image_path = os.path.join(app.config['UPLOAD_IMAGE_FOLDER'], filename)
+                image_file.save(image_path)
+
+                post.image_url = filename
         
         db.session.commit()
         flash('Post successfully updated!')

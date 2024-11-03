@@ -18,8 +18,12 @@
         {% if post.ispublic == 'public' %}
             {% if not tag or post.tags == tag %}
                 <div class="post" data-id="{{ post.id }}">
+                    {% if post.image_url %}
+                        <img src="{{ url_for('static', filename='image/' + post.image_url) }}" alt="Post Image" style="max-width: 100%; height: auto; width: 300px;"/><br>
+                    {% endif %}
                     <h2>{{ post.title }}</h2>
                     <hr>
+
                     <p>{{ post.content }}</p><br><br>
 
                     <img src="{{ url_for('static', filename='icons/tag_label_blue_icon.png') }}" alt="Tag Label icon" style="width: 20px; height: auto;">

@@ -5,7 +5,7 @@
 {% block content %}
 
 <div class="textarea-container">
-    <form action="/myblog" method="POST">
+    <form action="/myblog" method="POST" enctype="multipart/form-data">
         <br>
         <button type="button" id="createpostbutton" name="createpostbutton" onclick="createPost()">Create a new post!</button>
         <br>
@@ -20,7 +20,10 @@
             <label for="private">Private</label>
             <input type="radio" id="private" name="visibility" value="private">
         </div>
-
+        
+        <input type="file" id="imageUpload" name="imageUpload" accept="image/" style="display: none;"><br><br>
+        <!-- <button type="button" id="uploadimageButton" style="display: none;">Upload</button> -->
+        
         <input type="hidden" name="user_id" value="{{ session['user_id'] }}">
         
         <br><br>
@@ -133,6 +136,7 @@
         document.getElementById("titleTextarea").style.display = "block";
         document.getElementById("contentTextarea").style.display = "block";
         document.getElementById("tagTextarea").style.display = "block";
+        document.getElementById("imageUpload").style.display = "block";
         document.getElementById("visibility-container").style.display = "block";
         document.getElementById("savepostbutton").style.display = "block";
         document.getElementById("gobackbutton").style.display = "block";
@@ -146,7 +150,8 @@
         titletextarea.style.display = 'none';
         contenttextarea.style.display = 'none';
         tagtextarea.style.display = 'none';
-
+        
+        document.getElementById("imageUpload").style.display = "none";
         document.getElementById('createpostbutton').style.display = 'inline';
         document.getElementById('visibility-container').style.display = 'none';
         document.getElementById('savepostbutton').style.display = 'none';
