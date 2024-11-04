@@ -164,6 +164,21 @@ def homepage():
 
     return render_template('homepage.html', posts=posts, liked_posts=liked_posts, saved_posts=saved_posts)
 
+@app.route('/user/<string:username>', methods=['GET', 'POST'])
+def user(username):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    user = User.query.get(session['user_id'])
+
+    target_user = User.query.filter_by(username=username).first()
+    target_user_posts = Post.query.filter(Post.user_id==target_user.id).all()
+
+    liked_posts = user.liked_post_ids.split(',')
+    saved_posts = user.saved_post_ids.split(',')
+
+    return render_template('user.html', user=user,target_user=target_user, target_user_posts=target_user_posts, liked_posts=liked_posts, saved_posts=saved_posts)
+
 @app.route('/taggedposts/<string:post_tag>', methods=['GET', 'POST'])
 def taggedposts(post_tag):
     if 'user_id' not in session:
@@ -480,7 +495,6 @@ def edit_post(post_id):
         return redirect(url_for('myblog'))
     
     return render_template('editpost.html', post=post)
-
 
 @app.route('/delete_post/<int:post_id>', methods=['GET', 'POST'])
 def delete_post(post_id):

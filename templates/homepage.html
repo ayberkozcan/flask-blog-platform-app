@@ -8,8 +8,10 @@
     <div class="search-container">
         <form action="/homepage" method="POST">
             <input type="text" id="postsearch" name="postsearch" placeholder="Search for a Post..." required>
-            <button type="submit" class="search-button">Search</button>
-        </form>
+            <button type="submit" style="background: none; border: none; padding: 10px; cursor: pointer;">
+                <img src="{{ url_for('static', filename='icons/search_icon.png') }}" alt="Search" style="width: 20px; height: 20px;">
+            </button>
+        </form>        
     </div>
 
     <h2>{{ 'No posts found' if not posts else 'Newest Posts' }}</h2>
@@ -33,7 +35,9 @@
                     <br><br>
 
                     <img src="{{ url_for('static', filename='profile_pics/' + (post.user.profile_pic_url or 'default.png')) }}" alt="User Profile Picture" class="profile-pic">
-                    <p>{{ post.user.username }}</p><br><br>
+                    <!-- <p>{{ post.user.username }}</p><br><br> -->
+                    <a href="{{ url_for('user', username=post.user.username) }}">{{ post.user.username }}</a><br><br>
+
                     <p>{{ post.created_date.strftime('%d %B') }}</p><br><br>
 
                     <img src="{{ url_for('static', filename='icons/' + ('red_heart_icon.png' if post.id|string in liked_posts else 'heart_thin_icon.png')) }}"

@@ -121,6 +121,9 @@
 </style>
 
 <div class="profile-box">
+    <h2 style="text-align: center; font-size: 2em; color: #4CAF50; font-family: Arial, sans-serif; font-weight: bold; 
+    margin-top: 20px; margin-bottom: 40px;text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);">Hello, {{ user.username }}!</h2>
+
     <div class="profile-row">
         <img src="{{ url_for('static', filename='profile_pics/' + (user.profile_pic_url or 'default.png')) }}" alt="Profile Picture" class="profile-pic" width="300" height="300">
     </div>

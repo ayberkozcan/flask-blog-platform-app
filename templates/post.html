@@ -24,7 +24,9 @@
                     <p><strong>{{ post.tags }}</strong></p><br><br>
                     
                     <img src="{{ url_for('static', filename='profile_pics/' + (post.user.profile_pic_url or 'default.png')) }}" alt="User Profile Picture" class="profile-pic">
-                    <p>{{ post.user.username }}</p><br><br>
+                    <!-- <p>{{ post.user.username }}</p><br><br> -->
+                    <a href="{{ url_for('user', username=post.user.username) }}">{{ post.user.username }}</a><br><br>
+
                     <p>{{ post.created_date.strftime('%d %B') }}</p><br><br>
 
                     <img src="{{ url_for('static', filename='icons/' + ('red_heart_icon.png' if post.id|string in liked_posts else 'heart_thin_icon.png')) }}"
