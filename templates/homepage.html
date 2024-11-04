@@ -32,7 +32,7 @@
                     <a href="{{ url_for('taggedposts', post_tag=post.tags) }}">{{ post.tags }}</a>
                     <br><br>
 
-                    <img src="{{ url_for('static', filename='profile_pics/' + (post.user.profile_pic_url or 'default.jpg')) }}" alt="User Profile Picture" class="profile-pic">
+                    <img src="{{ url_for('static', filename='profile_pics/' + (post.user.profile_pic_url or 'default.png')) }}" alt="User Profile Picture" class="profile-pic">
                     <p>{{ post.user.username }}</p><br><br>
                     <p>{{ post.created_date.strftime('%d %B') }}</p><br><br>
 

@@ -4,32 +4,32 @@
 
 {% block content %}
 
-<div class="textarea-container">
-    <form action="/myblog" method="POST" enctype="multipart/form-data">
-        <br>
-        <button type="button" id="createpostbutton" name="createpostbutton" onclick="createPost()">Create a new post!</button>
-        <br>
-        
-        <textarea id="titleTextarea" name="titleTextarea" style="display: none;" placeholder="Enter the title" required></textarea>
-        <textarea id="contentTextarea" name="contentTextarea" style="display: none;" placeholder="Write your content here..." required></textarea>
-        <textarea id="tagTextarea" name="tagTextarea" style="display: none;" placeholder="Enter tags (comma separated)" required></textarea>
-        
-        <div id="visibility-container" style="display: none;">
-            <label for="public">Public</label>
-            <input type="radio" id="public" name="visibility" value="public" checked>
-            <label for="private">Private</label>
-            <input type="radio" id="private" name="visibility" value="private">
-        </div>
-        
-        <input type="file" id="imageUpload" name="imageUpload" accept="image/" style="display: none;"><br><br>
-        <!-- <button type="button" id="uploadimageButton" style="display: none;">Upload</button> -->
-        
-        <input type="hidden" name="user_id" value="{{ session['user_id'] }}">
-        
-        <br><br>
-        <button type="submit" id="savepostbutton" style="display: none;" onclick="savePost()">Save Post</button><br>
-        <button type="button" id="gobackbutton" style="display: none;" onclick="savePost()">Go Back</button>
-    </form>
+<div class="box">
+    <div class="container">
+        <form action="/myblog" method="POST" enctype="multipart/form-data">
+            <button type="button" id="createpostbutton" name="createpostbutton" onclick="createPost()">Create a new post!</button>
+            <br>
+            
+            <textarea id="titleTextarea" name="titleTextarea" style="display: none;" placeholder="Enter the title" required></textarea>
+            <textarea id="contentTextarea" name="contentTextarea" style="display: none;" placeholder="Write your content here..." required></textarea>
+            <textarea id="tagTextarea" name="tagTextarea" style="display: none;" placeholder="Enter tags (comma separated)" required></textarea>
+            
+            <div id="visibility-container" style="display: none;">
+                <label for="public">Public</label>
+                <input type="radio" id="public" name="visibility" value="public" checked>
+                <label for="private">Private</label>
+                <input type="radio" id="private" name="visibility" value="private">
+            </div><br>
+            
+            <input type="file" id="imageUpload" name="imageUpload" accept="image/" style="display: none;"><br><br>
+            <!-- <button type="button" id="uploadimageButton" style="display: none;">Upload</button> -->
+            
+            <input type="hidden" name="user_id" value="{{ session['user_id'] }}">
+            
+            <button type="submit" id="savepostbutton" style="display: none;" onclick="savePost()">Save Post</button><br>
+            <button type="button" id="gobackbutton" style="display: none;" onclick="savePost()">Go Back</button>
+        </form>
+    </div>
 </div>
 
 {% with messages = get_flashed_messages() %}
@@ -43,6 +43,7 @@
 {% endwith %}
 
 <div class="posts-container">
+    <h2>My Posts</h2>
     {% for post in posts %}
         {% if post.user_id == session['user_id'] %}
             <div class="post" data-id="{{ post.id }}">

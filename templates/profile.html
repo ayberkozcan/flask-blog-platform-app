@@ -33,6 +33,10 @@
         document.getElementById('saveButton').style.display = 'none';
     }
 
+    function confirmRemoval() {
+        return confirm('Are you sure you want to remove your profile picture?')
+    }
+
     window.onload = function(){
         const flashMessages = document.getElementById('flashMessages');
         if (flashMessages) {
@@ -118,13 +122,19 @@
 
 <div class="profile-box">
     <div class="profile-row">
-        <img src="{{ url_for('static', filename='profile_pics/' + (user.profile_pic_url or 'default.jpg')) }}" alt="Profile Picture" class="profile-pic" width="300" height="300">
+        <img src="{{ url_for('static', filename='profile_pics/' + (user.profile_pic_url or 'default.png')) }}" alt="Profile Picture" class="profile-pic" width="300" height="300">
     </div>
 
     <form action="/uploadpp" method="POST" enctype="multipart/form-data">
         <input type="file" name="profile_pic" accept="image/" required><br><br>
         <button type="submit" id="uploadppButton">Upload</button> 
-    </form><br><br>
+    </form><br>
+
+    {% if user.profile_pic_url %}
+        <form action="/removepp" method="POST" onsubmit="return confirmRemoval()">
+            <button type="submit" id="removeppButton" class="remove-pp-button" onclick="confirmRemoval()">Remove Profile Picture</button>
+        </form><br><br>
+    {% endif %}
 
     <div class="profile-row">
         <label class="profile-label">Username:</label>

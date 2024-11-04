@@ -310,6 +310,19 @@ def upload_pp():
     
     return render_template('profile.html', user=user)
 
+@app.route('/removepp', methods=['POST'])
+def remove_pp():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    user = User.query.get(session['user_id'])
+    
+    if user and user.profile_pic_url:
+        user.profile_pic_url = None
+        db.session.commit()
+
+    return redirect(url_for('profile'))
+    
 # @app.route('/likedposts', methods=['GET', 'POST'])
 # def likedposts():
 #     if 'user_id' not in session:

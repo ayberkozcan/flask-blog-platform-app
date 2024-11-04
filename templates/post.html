@@ -6,13 +6,16 @@
 
 <div class="posts-container">
     <div class="textarea-container">
-        <button onclick="location.href='/homepage'">Go Back</button>
+        <button onclick="location.href='/homepage'">Go Back</button><br>
     </div>
 
     {% for post in posts %}
         {% if post.ispublic == 'public' %}
             {% if post.id == post_id %}
                 <div class="post" data-id="{{ post.id }}">
+                    {% if post.image_url %}
+                        <img src="{{ url_for('static', filename='image/' + post.image_url) }}" alt="Post Image" style="max-width: 100%; height: auto; width: 300px;"/><br>
+                    {% endif %}
                     <h2>{{ post.title }}</h2>
                     <hr>
                     <p>{{ post.content }}</p><br><br>
@@ -20,6 +23,7 @@
                     <img src="{{ url_for('static', filename='icons/tag_label_blue_icon.png') }}" alt="Tag Label icon" style="width: 20px; height: auto;">
                     <p><strong>{{ post.tags }}</strong></p><br><br>
                     
+                    <img src="{{ url_for('static', filename='profile_pics/' + (post.user.profile_pic_url or 'default.png')) }}" alt="User Profile Picture" class="profile-pic">
                     <p>{{ post.user.username }}</p><br><br>
                     <p>{{ post.created_date.strftime('%d %B') }}</p><br><br>
 
@@ -57,11 +61,13 @@
         <div class="comment">
             <div class="comment-header">
                 <img src="{{ url_for('static', filename='profile_pics/' + (comment.user.profile_pic_url or 'default.jpg')) }}" alt="User Profile Picture" class="profile-pic">
+                <br><br>
                 <p class="username">{{ comment.user.username }}</p>
                 <span class="comment-date">{{ comment.created_at.strftime('%Y-%m-%d') }}</span>
             </div>
             <p class="comment-content">{{ comment.content }}</p>
             {% if comment.user_id == user_id %}
+                <br><br>
                 <form action="{{ url_for('deletecomment', post_id=post_id, comment_id=comment.comment_id) }}" method="POST">
                     <button type="submit" name="deletecomment">Delete Comment</button>
                 </form>
