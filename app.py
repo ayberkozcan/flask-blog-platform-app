@@ -90,7 +90,11 @@ def login():
             flash("Incorrect Password!")
             return render_template('login.html')
         
-        response = make_response(redirect(url_for('homepage')))
+        if user.role == 'User':
+            response = make_response(redirect(url_for('homepage')))
+        else:
+            response = make_response(redirect(url_for('admin_homepage')))
+
         response.set_cookie('email', email, max_age=60*60*24*30)
         response.set_cookie('password', password, max_age=60*60*24*30)
 
@@ -144,6 +148,13 @@ def logout():
     session.pop('user_id', None)
     
     return redirect(url_for('visitor_homepage'))
+
+@app.route('/admin_homepage', methods=['GET', 'POST'])
+def admin_homepage():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    return render_template('admin_homepage.html')
 
 @app.route('/homepage', methods=['GET', 'POST'])
 def homepage():
@@ -337,32 +348,6 @@ def remove_pp():
         db.session.commit()
 
     return redirect(url_for('profile'))
-    
-# @app.route('/likedposts', methods=['GET', 'POST'])
-# def likedposts():
-#     if 'user_id' not in session:
-#         return redirect(url_for('login'))
-    
-#     user = User.query.get(session['user_id'])
-#     posts = Post.query.all()
-
-#     liked_posts = user.liked_post_ids.split(',') if user.liked_post_ids else []
-#     saved_posts = user.saved_post_ids.split(',') if user.saved_post_ids else []
-
-#     return render_template('likedposts.html', user=user, posts=posts, liked_posts=liked_posts, saved_posts=saved_posts)
-
-# @app.route('/savedposts', methods=['GET', 'POST'])
-# def savedposts():
-#     if 'user_id' not in session:
-#         return redirect(url_for('login'))
-    
-#     user = User.query.get(session['user_id'])
-#     posts = Post.query.all()
-
-#     liked_posts = user.liked_post_ids.split(',') if user.liked_post_ids else []
-#     saved_posts = user.saved_post_ids.split(',') if user.saved_post_ids else []
-
-#     return render_template('savedposts.html', user=user, posts=posts, liked_posts=liked_posts, saved_posts=saved_posts)
 
 @app.route('/likedsavedposts/<string:type>', methods=['GET', 'POST'])
 def likedsavedposts(type):
