@@ -208,7 +208,13 @@ ul p {
     margin: 20px 0;
 }
 
-#postsearch {
+.user-search-container {
+    width: 100%;
+    display: flex;
+    margin-left: 142px;
+}
+
+#postsearch, #usersearch {
     flex-grow: 1;
     padding: 10px;
     border-radius: 5px;

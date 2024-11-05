@@ -44,9 +44,22 @@
 <body>
     <h1>Blog Platform - Admin Panel</h1>
     <div class="button-container">
-        <button onclick="location.href='/users'">Users</button>
+        <button onclick="location.href='/admin_homepage'">Homepage</button>
+        <button onclick="location.href='/userlist'">Users</button>
         <button onclick="location.href='/logout'">Log Out</button>
     </div>
+
+    <!-- <div class="box">
+        <h2>Welcome, {{ user.username }}!</h2>
+
+        <p>Total User Count: {{ user_count }}</p>
+        <p>Total Post Count: {{ post_count }}</p>
+        <p>Total Comment Count: {{ comment_count }}</p>
+
+        <p>Total Joined Users (Last Month): {{ user_count_last_month }}</p>
+        <p>Total Joined Users (Last Week): {{ user_count_last_week }}</p>
+
+    </div> -->
 
     {% block content %}{% endblock %}
     

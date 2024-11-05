@@ -1,0 +1,61 @@
+{% extends 'admin_homepage.html' %}
+
+{% block title %}My Blog{% endblock %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
+
+<style>
+    .box {
+        max-width: 1500px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background-color: #f9f9f9;
+        display: flex;
+        justify-content: left;
+        align-items: left;
+        gap: 15px;
+    }
+</style>
+
+<h1 style="text-align: left; padding: 20px; margin-left: 120px;">Users</h1>
+
+<div class="user-search-container">
+    <form action="/userlist" method="POST">
+        <input type="text" id="usersearch" name="usersearch" placeholder="Search for a User..." required>
+        <button type="submit" style="background: none; border: none; padding: 10px; cursor: pointer;">
+            <img src="{{ url_for('static', filename='icons/search_icon.png') }}" alt="Search" style="width: 20px; height: 20px;">
+        </button>
+    </form>        
+</div>
+
+<h2 style="text-align: center;">{{ 'No users found' if not users else '' }}</h2>
+
+{% for user in users %}
+    {% if user.role == 'Admin' %}
+        <div class="box">
+            <p style="background-color: rgb(138, 200, 255); color: white; padding: 6px; border-radius: 25%;">{{ user.role }}</p>
+            <img src="{{ url_for('static', filename='profile_pics/' + (user.profile_pic_url or 'default.png')) }}" alt="User Profile Picture" class="profile-pic">
+            <a href="{{ url_for('user', username=user.username) }}">{{ user.username }}</a>
+            <p>ID: {{ user.id }}</p>
+        </div>
+    {% endif %}
+{% endfor %}
+
+{% for user in users %}
+    {% if user.role != 'Admin' %}
+        <div class="box">   
+            <p style="background-color: rgb(255, 253, 141); color: gray; padding: 6px; border-radius: 25%; margin-right: 21px;">{{ user.role }}</p>
+            <img src="{{ url_for('static', filename='profile_pics/' + (user.profile_pic_url or 'default.png')) }}" alt="User Profile Picture" class="profile-pic">
+            <a href="{{ url_for('user', username=user.username) }}">{{ user.username }}</a>
+            <p>ID: {{ user.id }}</p>
+            <p>Join Date: {{ user.join_date.strftime('%Y-%m-%d') }}</p>
+        </div>
+    {% endif %}
+{% endfor %}
+
+{% endblock %}

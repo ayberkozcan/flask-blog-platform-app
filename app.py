@@ -2,7 +2,7 @@ from flask import Flask, make_response, render_template, request, redirect, url_
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_migrate import Migrate
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 from werkzeug.utils import secure_filename
 
@@ -154,7 +154,46 @@ def admin_homepage():
     if 'user_id' not in session:
         return redirect(url_for('login'))
 
-    return render_template('admin_homepage.html')
+    user = User.query.get(session['user_id'])
+
+    # users = User.query.all()
+    # posts = Post.query.all()
+    # comments = Comment.query.all()
+
+    # user_count = len(users)
+    # post_count = len(posts)
+    # comment_count = len(comments)
+
+    # one_month_ago = datetime.now() - timedelta(days=30)
+    # one_week_ago = datetime.now() - timedelta(days=7)
+    # user_count_last_month = User.query.filter(User.join_date >= one_month_ago).count()
+    # user_count_last_week = User.query.filter(User.join_date >= one_week_ago).count()
+
+    return render_template(
+        'admin_homepage.html',
+        user=user,
+        # user_count=user_count,
+        # post_count=post_count,
+        # comment_count=comment_count,
+        # user_count_last_month=user_count_last_month,
+        # user_count_last_week=user_count_last_week
+    )
+
+@app.route('/userlist', methods=['GET', 'POST'])
+def userlist():
+    if 'user_id' not in session and user.role != 'Admin':
+        return redirect(url_for('login'))
+    
+    user = User.query.get(session['user_id'])
+
+    search_term = request.form.get('usersearch', '').strip()
+
+    if search_term:
+        users = User.query.filter(User.username.ilike(f'%{search_term}%')).all()
+    else:
+        users = User.query.all()
+
+    return render_template('userlist.html', user=user, users=users)
 
 @app.route('/homepage', methods=['GET', 'POST'])
 def homepage():
