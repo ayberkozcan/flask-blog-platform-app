@@ -1,67 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Blog{% endblock %}</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-        }
+{% extends 'base.html' %}
 
-        h1 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 30px;
-        }
+{% block title %}My Blog{% endblock %}
 
-        .button-container {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            border-bottom: 2px solid #555555;
-            padding-bottom: 10px;
-            margin-top: 40px;
-            margin-bottom: 20px;
-        }
+{% block content %}
 
-        .button-container button {
-            margin: 10px;
-            padding: 12px 20px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
-            background-color: #6046ff;
-            color: white;
-        }
-    </style>
-</head>
-<body>
-    <h1>Blog Platform - Admin Panel</h1>
-    <div class="button-container">
-        <button onclick="location.href='/admin_homepage'">Homepage</button>
-        <button onclick="location.href='/userlist'">Users</button>
-        <button onclick="location.href='/logout'">Log Out</button>
-    </div>
+<div class="admin-box">
+    <h2>Welcome, {{ user.username }}!</h2>
 
-    <!-- <div class="box">
-        <h2>Welcome, {{ user.username }}!</h2>
+    <p>Total User Count: {{ user_count }}</p>
+    <p>Total Post Count: {{ post_count }}</p>
+    <p>Total Comment Count: {{ comment_count }}</p>
 
-        <p>Total User Count: {{ user_count }}</p>
-        <p>Total Post Count: {{ post_count }}</p>
-        <p>Total Comment Count: {{ comment_count }}</p>
+    <p>Total Joined Users (Last Month): {{ user_count_last_month }}</p>
+    <p>Total Joined Users (Last Week): {{ user_count_last_week }}</p>
 
-        <p>Total Joined Users (Last Month): {{ user_count_last_month }}</p>
-        <p>Total Joined Users (Last Week): {{ user_count_last_week }}</p>
+</div>
 
-    </div> -->
-
-    {% block content %}{% endblock %}
-    
-</body>
-</html>
+{% endblock %}

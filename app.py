@@ -1,4 +1,4 @@
-from flask import Flask, make_response, render_template, request, redirect, url_for, flash, session
+from flask import Flask, make_response, render_template, request, redirect, url_for, flash, session, g
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_migrate import Migrate
@@ -143,6 +143,13 @@ def register():
         
     return render_template('register.html')
 
+@app.before_request
+def load_user():
+    if 'user_id' in session:
+        g.user = User.query.get(session['user_id'])
+    else:
+        g.user = None
+
 @app.route('/logout')
 def logout():
     session.pop('user_id', None)
@@ -156,27 +163,30 @@ def admin_homepage():
 
     user = User.query.get(session['user_id'])
 
-    # users = User.query.all()
-    # posts = Post.query.all()
-    # comments = Comment.query.all()
+    if user.role != 'Admin':
+        return redirect(url_for('login'))
 
-    # user_count = len(users)
-    # post_count = len(posts)
-    # comment_count = len(comments)
+    users = User.query.all()
+    posts = Post.query.all()
+    comments = Comment.query.all()
 
-    # one_month_ago = datetime.now() - timedelta(days=30)
-    # one_week_ago = datetime.now() - timedelta(days=7)
-    # user_count_last_month = User.query.filter(User.join_date >= one_month_ago).count()
-    # user_count_last_week = User.query.filter(User.join_date >= one_week_ago).count()
+    user_count = len(users)
+    post_count = len(posts)
+    comment_count = len(comments)
+
+    one_month_ago = datetime.now() - timedelta(days=30)
+    one_week_ago = datetime.now() - timedelta(days=7)
+    user_count_last_month = User.query.filter(User.join_date >= one_month_ago).count()
+    user_count_last_week = User.query.filter(User.join_date >= one_week_ago).count()
 
     return render_template(
         'admin_homepage.html',
         user=user,
-        # user_count=user_count,
-        # post_count=post_count,
-        # comment_count=comment_count,
-        # user_count_last_month=user_count_last_month,
-        # user_count_last_week=user_count_last_week
+        user_count=user_count,
+        post_count=post_count,
+        comment_count=comment_count,
+        user_count_last_month=user_count_last_month,
+        user_count_last_week=user_count_last_week
     )
 
 @app.route('/userlist', methods=['GET', 'POST'])
@@ -185,6 +195,9 @@ def userlist():
         return redirect(url_for('login'))
     
     user = User.query.get(session['user_id'])
+
+    if user.role != 'Admin':
+        return redirect(url_for('login'))
 
     search_term = request.form.get('usersearch', '').strip()
 

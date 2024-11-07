@@ -43,14 +43,25 @@
     </style>
 </head>
 <body>
-    <h1>Blog Platform</h1>
-    <div class="button-container">
-        <button onclick="location.href='/homepage'">Homepage</button>
-        <button onclick="location.href='/myblog'">My Blog</button>
-        <button onclick="location.href='/profile'">Profile</button>
-        <button onclick="location.href='/settings'">Settings</button>
-        <button onclick="location.href='/logout'">Log Out</button>
-    </div>
+    {% if g.user.role == 'User' %}
+        <h1>Blog Platform</h1>
+        <div class="button-container">
+            <button onclick="location.href='/homepage'">Homepage</button>
+            <button onclick="location.href='/myblog'">My Blog</button>
+            <button onclick="location.href='/profile'">Profile</button>
+            <button onclick="location.href='/settings'">Settings</button>
+            <button onclick="location.href='/logout'">Log Out</button>
+        </div>
+    {% endif %}
+
+    {% if g.user.role == 'Admin' %}
+        <h1>Blog Platform - Admin Panel</h1>
+        <div class="button-container">
+            <button onclick="location.href='/admin_homepage'">Homepage</button>
+            <button onclick="location.href='/userlist'">Users</button>
+            <button onclick="location.href='/logout'">Log Out</button>
+        </div>
+    {% endif %}
 
     {% block content %}{% endblock %}
     
