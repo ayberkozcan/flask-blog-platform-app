@@ -31,6 +31,11 @@ input {
     border-radius: 3px;
 }
 
+input:focus {
+    border-color: #6046ff;
+    outline: none;
+}
+
 button {
     padding: 10px 15px;
     margin-top: 10px;
@@ -46,6 +51,29 @@ button:hover {
 }
 
 a {
-    margin-top: 10px;
-    display: inline-block;
+    font-size: 16px;
+    color: #808080;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+a:visited {
+    color: #808080;
+    text-decoration: none;
+}
+
+select {
+    width: 98%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    background-color: #fff;
+    font-size: 14px;
+}
+
+select:focus {
+    border-color: #6046ff;
+    outline: none;
 }

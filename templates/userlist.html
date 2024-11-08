@@ -20,6 +20,17 @@
         align-items: left;
         gap: 15px;
     }
+    .delete-button {
+        background-color: #ff4d4d;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .delete-button:hover {
+        background-color: #ff1a1a;
+    }
 </style>
 
 <h1 style="text-align: left; padding: 20px; margin-left: 120px;">Users</h1>
@@ -31,31 +42,51 @@
             <img src="{{ url_for('static', filename='icons/search_icon.png') }}" alt="Search" style="width: 20px; height: 20px;">
         </button>
     </form>        
+    
+    <button id="adduser" onclick="location.href='adduser'">Add User</button>
+
 </div>
 
 <h2 style="text-align: center;">{{ 'No users found' if not users else '' }}</h2>
 
 {% for user in users %}
     {% if user.role == 'Admin' %}
-        <div class="box">
+        <div class="box" style="display: flex; justify-content: space-between; align-items: center;">
             <p style="background-color: rgb(138, 200, 255); color: white; padding: 6px; border-radius: 25%;">{{ user.role }}</p>
             <img src="{{ url_for('static', filename='profile_pics/' + (user.profile_pic_url or 'default.png')) }}" alt="User Profile Picture" class="profile-pic">
             <a href="{{ url_for('user', username=user.username) }}">{{ user.username }}</a>
             <p>ID: {{ user.id }}</p>
+            <p>Age: {{ user.age }}</p>
+            <p>Join Date: {{ user.join_date.strftime('%Y-%m-%d') }}</p>
+            <form id="delete-form-{{ user.id }}" action="{{ url_for('deleteuser', user_id=user.id) }}" method="POST">
+                <button type="button" class="delete-button" onclick="confirmDeletion('{{ user.id }}')">Delete Admin</button>
+            </form>
         </div>
     {% endif %}
 {% endfor %}
 
 {% for user in users %}
     {% if user.role != 'Admin' %}
-        <div class="box">   
+        <div class="box" style="display: flex; justify-content: space-between; align-items: center;">   
             <p style="background-color: rgb(255, 253, 141); color: gray; padding: 6px; border-radius: 25%; margin-right: 21px;">{{ user.role }}</p>
             <img src="{{ url_for('static', filename='profile_pics/' + (user.profile_pic_url or 'default.png')) }}" alt="User Profile Picture" class="profile-pic">
             <a href="{{ url_for('user', username=user.username) }}">{{ user.username }}</a>
             <p>ID: {{ user.id }}</p>
+            <p>Age: {{ user.age }}</p>
             <p>Join Date: {{ user.join_date.strftime('%Y-%m-%d') }}</p>
+            <form id="delete-form-{{ user.id }}" action="{{ url_for('deleteuser', user_id=user.id) }}" method="POST">
+                <button type="button" class="delete-button" onclick="confirmDeletion('{{ user.id }}')">Delete User</button>
+            </form>
         </div>
     {% endif %}
 {% endfor %}
+
+<script>
+    function confirmDeletion(userId) {
+        if (confirm('Are you sure you want to delete this user?')) {
+            document.getElementById('delete-form-' + userId).submit();
+        }
+    }
+</script>
 
 {% endblock %}

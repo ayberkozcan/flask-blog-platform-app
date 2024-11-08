@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+</head>
+<body>
+    <form action="/adduser" method="POST">
+        <label for="email">E-Mail</label>
+        <input type="email" id="email" name="email" required>
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required>
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
+        <label for="age">Age</label>
+        <input type="number" id="age" name="age" min="18" max="120" required>
+        <label for="roles">Role</label>
+        <select id="role" name="role">
+            <option value="User">User</option>
+            <option value="Admin">Admin</option>
+        </select><br>
+        <button type="submit">Add User</button> 
+    </form>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+</body>
+</html>

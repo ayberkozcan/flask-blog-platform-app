@@ -208,6 +208,85 @@ def userlist():
 
     return render_template('userlist.html', user=user, users=users)
 
+@app.route('/adduser', methods=['GET', 'POST'])
+def adduser():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        username = request.form.get('username')
+        password = request.form.get('password')
+        age = request.form.get('age')
+        role = request.form.get('role')
+
+        existing_user_email = User.query.filter_by(email=email).first()
+        existing_user_username = User.query.filter_by(username=username).first()
+
+        if existing_user_email:
+            flash("This e-mail already exists!")
+            return render_template('adduser.html')
+        
+        if existing_user_username:
+            flash("This username already exists!")
+            return render_template('adduser.html')
+
+        if len(username) < 6:
+            flash("Username must be at least 6 characters long!")
+            return render_template('adduser.html')
+
+        if len(password) < 6:
+            flash("Password must be at least 6 characters long!")
+            return render_template('adduser.html')
+
+        password_hash = generate_password_hash(password)
+        new_user = User(email=email, username=username, password=password_hash, age=age, role=role)
+
+        db.session.add(new_user)
+        db.session.commit()
+
+        return redirect(url_for('userlist'))
+        
+    return render_template('adduser.html')
+
+@app.route('/deleteuser/<int:user_id>', methods=['GET', 'POST'])
+def deleteuser(user_id):
+    user = User.query.get_or_404(user_id)
+    db.session.delete(user)
+    db.session.commit()
+    flash("User has been deleted successfully!")
+
+    return redirect(url_for('userlist'))
+
+@app.route('/postlist', methods=['GET', 'POST'])
+def postlist():
+    if 'user_id' not in session and user.role != 'Admin':
+        return redirect(url_for('login'))
+    
+    user = User.query.get(session['user_id'])
+
+    if user.role != 'Admin':
+        return redirect(url_for('login'))
+
+    search_term = request.form.get('postsearch', '').strip()
+
+    if search_term:
+        posts = Post.query.filter(Post.title.ilike(f'%{search_term}%')).all()
+    else:
+        posts = Post.query.all()
+
+    return render_template('postlist.html', user=user, posts=posts)
+
+@app.route('/deletepost/<int:post_id>', methods=['GET', 'POST'])
+def deletepost(post_id):
+    post = Post.query.get_or_404(post_id)
+
+    Comment.query.filter_by(post_id=post_id).delete()
+
+    db.session.delete(post)
+    db.session.commit()
+    
+    flash("Post has been deleted successfully!")
+
+    return redirect(url_for('postlist'))
+
 @app.route('/homepage', methods=['GET', 'POST'])
 def homepage():
     if 'user_id' not in session:
@@ -216,11 +295,19 @@ def homepage():
     user = User.query.get(session['user_id'])
 
     search_term = request.form.get('postsearch', '').strip()
+    sort_option = request.form.get('sort', 'Newest')
 
     if search_term:
         posts = Post.query.filter(Post.title.ilike(f'%{search_term}%'), Post.ispublic == 'public').all()
     else:
-        posts = Post.query.all()
+        posts = Post.query.filter(Post.ispublic == 'public')
+
+    if sort_option == 'Newest':
+        posts = posts.order_by(Post.created_date.desc())
+    elif sort_option == 'Most Liked':
+        posts = posts.order_by(Post.like_count.desc())
+
+    posts = posts.all()
 
     liked_posts = user.liked_post_ids.split(',')
     saved_posts = user.saved_post_ids.split(',')

@@ -1,0 +1,74 @@
+{% extends 'admin_homepage.html' %}
+
+{% block title %}My Blog{% endblock %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
+
+<style>
+    .box {
+        max-width: 1500px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background-color: #f9f9f9;
+        display: flex;
+        justify-content: left;
+        align-items: left;
+        gap: 15px;
+    }
+    .delete-button {
+        background-color: #ff4d4d;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .delete-button:hover {
+        background-color: #ff1a1a;
+    }
+</style>
+
+<h1 style="text-align: left; padding: 20px; margin-left: 120px;">Posts</h1>
+
+<div class="user-search-container">
+    <form action="/postlist" method="POST">
+        <input type="text" id="postsearch" name="postsearch" placeholder="Search for a Post..." required>
+        <button type="submit" style="background: none; border: none; padding: 10px; cursor: pointer;">
+            <img src="{{ url_for('static', filename='icons/search_icon.png') }}" alt="Search" style="width: 20px; height: 20px;">
+        </button>
+    </form>        
+</div>
+
+<h2 style="text-align: center;">{{ 'No posts found' if not posts else '' }}</h2>
+
+{% for post in posts %}
+    <div class="box" style="display: flex; justify-content: space-between; align-items: center;">
+        <img src="{{ url_for('static', filename='image/' + (post.image_url or 'default.png')) }}" alt="Post Image" class="profile-pic">
+        <!-- <a href="{{ url_for('post', post_id=post.id) }}">{{ post.title }}</a> -->
+        <p>Title: {{ post.title }}</p>
+        <p>Username: {{ post.user.username }}</p>
+        <p>ID: {{ post.id }}</p>
+        <p>Tag: {{ post.tags }}</p>
+        <p>Like Count: {{ post.like_count }}</p>
+        <p>Save Count: {{ post.save_count }}</p>
+        <p>Create Date: {{ post.created_date.strftime('%Y-%m-%d') }}</p>
+        <form id="delete-form-{{ post.id }}" action="{{ url_for('deletepost', post_id=post.id) }}" method="POST">
+            <button type="button" class="delete-button" onclick="confirmDeletion('{{ post.id }}')">Delete Post</button>
+        </form>
+    </div>
+{% endfor %}
+
+<script>
+    function confirmDeletion(postId) {
+        if (confirm('Are you sure you want to delete this post?')) {
+            document.getElementById('delete-form-' + postId).submit();
+        }
+    }
+</script>
+
+{% endblock %}

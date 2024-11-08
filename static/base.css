@@ -60,6 +60,21 @@ textarea {
     resize: vertical;
 }
 
+select {
+    width: 10%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    background-color: #fff;
+    font-size: 14px;
+}
+
+select:focus {
+    border-color: #6046ff;
+    outline: none;
+}
+
 textarea:focus {
     border-color: #6046ff;
     outline: none;
@@ -212,6 +227,8 @@ ul p {
 .user-search-container {
     width: 100%;
     display: flex;
+    flex-direction: column;
+    align-items: flex-start;
     margin-left: 142px;
 }
 
@@ -224,6 +241,11 @@ ul p {
     transition: border-color 0.3s;
 }
 
+#postsearch, #usersearch:focus {
+    border-color: #6046ff;
+    outline: none;
+}
+
 .search-button {
     width: 80px;
     height: 36px;
@@ -232,6 +254,15 @@ ul p {
     cursor: pointer;
     font-size: 16px;
     transition: background 0.3s, border-color 0.3s;
+}
+
+#adduser {
+    background-color: #00a00d;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    margin-top: 20px;
 }
 
 .admin-box {

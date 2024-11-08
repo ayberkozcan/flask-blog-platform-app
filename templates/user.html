@@ -118,13 +118,11 @@
                         <p>{{ post.content }}</p><br><br>
 
                         <img src="{{ url_for('static', filename='icons/tag_label_blue_icon.png') }}" alt="Tag Label icon" style="width: 20px; height: auto;">
-                        <!-- <p><strong>{{ post.tags }}</strong></p> -->
                         
                         <a href="{{ url_for('taggedposts', post_tag=post.tags) }}">{{ post.tags }}</a>
                         <br><br>
 
                         <img src="{{ url_for('static', filename='profile_pics/' + (post.user.profile_pic_url or 'default.png')) }}" alt="User Profile Picture" class="profile-pic-small">
-                        <!-- <p>{{ post.user.username }}</p><br><br> -->
                         <a href="{{ url_for('user', username=post.user.username) }}">{{ post.user.username }}</a><br><br>
 
                         <p>{{ post.created_date.strftime('%d %B') }}</p><br><br>
