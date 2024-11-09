@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block title %}My Blog{% endblock %}
+
+{% block content %}
+
+<div class="content">
+    <div class="main-content">
+        <div class="posts-container">
+            <h2>{{ 'No posts found' if not posts else 'Newest Posts' }}</h2>
+        
+            <form method="POST" action="{{ url_for('followingposts') }}">
+                <select id="sort" name="sort" onchange="this.form.submit()">
+                    <option value="Newest" {% if request.form.get('sort') == 'Newest' %}selected{% endif %}>Newest</option>
+                    <option value="Most Liked" {% if request.form.get('sort') == 'Most Liked' %}selected{% endif %}>Most Liked</option>
+                </select><br>
+            </form>    
+            
+            {% for post in posts %}
+                {% if post.ispublic == 'public' %}
+                    {% if not tag or post.tags == tag %}
+                        {% if post.user.id|string in user.followed_user_ids.split(',') %}
+                            <div class="post" data-id="{{ post.id }}">
+                                {% if post.image_url %}
+                                    <img src="{{ url_for('static', filename='image/' + post.image_url) }}" alt="Post Image" style="max-width: 100%; height: auto; width: 300px;"/><br>
+                                {% endif %}
+                                <h2>{{ post.title }}</h2>
+                                <hr>
+        
+                                <p>{{ post.content }}</p><br><br>
+        
+                                <img src="{{ url_for('static', filename='icons/tag_label_blue_icon.png') }}" alt="Tag Label icon" style="width: 20px; height: auto;">
+                                
+                                <a href="{{ url_for('taggedposts', post_tag=post.tags) }}">{{ post.tags }}</a>
+                                <br><br>
+        
+                                <img src="{{ url_for('static', filename='profile_pics/' + (post.user.profile_pic_url or 'default.png')) }}" alt="User Profile Picture" class="profile-pic">
+                                <a href="{{ url_for('user', username=post.user.username) }}">{{ post.user.username }}</a><br><br>
+        
+                                <p>{{ post.created_date.strftime('%d %B') }}</p><br><br>
+        
+                                <img src="{{ url_for('static', filename='icons/' + ('red_heart_icon.png' if post.id|string in liked_posts else 'heart_thin_icon.png')) }}"
+                                    onclick="toggleImage(this, 'heart')" 
+                                    style="width: 20px; height: 20px; cursor: pointer;" />
+                                <span class="like-count">{{ post.like_count }}</span>
+                                
+                                <img src="{{ url_for('static', filename='icons/' + ('saved_bookmark_icon.png' if post.id|string in saved_posts else 'saved_icon.png')) }}"
+                                    onclick="toggleImage(this, 'save')" 
+                                    style="width: 20px; height: 20px; cursor: pointer;" />
+                                <span class="like-count">{{ post.save_count }}</span>
+        
+                                <br><br>
+        
+                                <a href="{{ url_for('post', post_id=post.id) }}">See Comments</a>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="followed-accounts">
+        <h3>Followed Accounts</h3>
+        {% for followed_user in followed_users %}
+            <div class="followed-user">
+                <img src="{{ url_for('static', filename='profile_pics/' + (followed_user.profile_pic_url or 'default.png')) }}" 
+                        alt="Profile Picture" class="profile-pic">
+                <a href="{{ url_for('user', username=followed_user.username) }}">{{ followed_user.username }}</a><br><br>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    function toggleImage(imgElement, type){
+        const currentSrc = imgElement.src;
+        let newSrc;
+        let action;
+
+        if(type === 'heart'){
+            if(currentSrc.includes('heart_thin_icon.png')){
+                newSrc = "{{ url_for('static', filename='icons/red_heart_icon.png') }}";
+                action = 'like';
+            }
+            else{
+                newSrc = "{{ url_for('static', filename='icons/heart_thin_icon.png') }}";
+                action = 'unlike';
+            }
+        }
+
+        if(type === 'save'){
+            if(currentSrc.includes('saved_icon.png')){
+                newSrc = "{{ url_for('static', filename='icons/saved_bookmark_icon.png') }}";
+                action = 'save';
+            }
+            else{
+                newSrc = "{{ url_for('static', filename='icons/saved_icon.png') }}";
+                action = 'unsave';
+            }
+        }
+        imgElement.src = newSrc;
+
+        const postId = imgElement.closest('.post').getAttribute('data-id');
+        
+        fetch("{{ url_for('toggle_like') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ post_id: postId, action: action })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.status === 'success'){
+                if (type === 'heart') {
+                    imgElement.nextElementSibling.textContent = data.like_count;
+                } else if (type === 'save') {
+                    imgElement.nextElementSibling.textContent = data.save_count;
+                }
+            }
+        });
+    }
+
+    function commentPost(){
+        document.getElementById('commentp').style.display = 'none';
+        document.getElementById('commentTextarea').style.display = 'inline';
+        document.getElementById('commentbutton').style.display = 'inline';
+        document.getElementById('commentgobackbutton').style.display = 'inline';
+    }
+
+    function commentPostSubmit(){
+        document.getElementById('commentp').style.display = 'inline';
+        document.getElementById('commentTextarea').style.display = 'none';
+        document.getElementById('commentbutton').style.display = 'none';
+        document.getElementById('commentgobackbutton').style.display = 'none';
+    }
+
+</script>
+
+{% endblock %}

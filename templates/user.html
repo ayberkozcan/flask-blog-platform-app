@@ -94,14 +94,27 @@
     </div>    
 </div>
 
-<div class="posts-container">
-    <!-- <div class="search-container">
-        <form action="/homepage" method="POST">
-            <input type="text" id="postsearch" name="postsearch" placeholder="Search for a Post..." required>
-            <button type="submit" class="search-button">Search</button>
-        </form>
-    </div> -->
+{% if target_user.id|string not in user.followed_user_ids.split(',') %}
+<form action="/follow" method="POST">
+    <input type="hidden" name="target_user_id" value="{{ target_user.id }}">
+    <!-- <input type="hidden" name="username" value="{{ username }}"> -->
+    <button type="submit" id="followbutton" style="margin-top: 20px">
+        Follow
+    </button>
+</form>
+{% endif %}
 
+{% if target_user.id|string in user.followed_user_ids.split(',') %}
+<form action="/unfollow" method="POST">
+    <input type="hidden" name="target_user_id" value="{{ target_user.id }}">
+    <!-- <input type="hidden" name="username" value="{{ username }}"> -->
+    <button type="submit" id="followbutton" style="margin-top: 20px">
+        Unfollow
+    </button>
+</form>
+{% endif %}
+
+<div class="posts-container">
     <h3>{% if not target_user_posts %}No posts found{% else %}{{ target_user.username }}'s Newest Posts{% endif %}</h3>
     
     {% for post in target_user_posts %}

@@ -7,14 +7,14 @@
 <div class="box">
     <div class="container">
         <button onclick="location.href='/changepassword'">Change Password</button>
-        <button type="button" class="delete-all-data-button" onclick="confirmDeletion()">Delete All Data</button>
+        <button type="button" class="delete-account-button" onclick="confirmDeletion()">Delete Account</button>
     </div>
 </div>
 
 <script>
     function confirmDeletion() {
         if (confirm('Are you sure you want to delete your ALL data?')) {
-            window.location.href = '/deletedata';
+            window.location.href = '/deleteaccount';
         }
     }
 </script>

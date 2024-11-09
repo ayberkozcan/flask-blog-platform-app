@@ -31,6 +31,7 @@ class User(db.Model):
     liked_post_ids = db.Column(db.Text, default="")
     saved_post_ids = db.Column(db.Text, default="")
     profile_pic_url = db.Column(db.String(255))
+    followed_user_ids = db.Column(db.Text, default="")
 
     def __repr__(self):
         return f"User('{self.username}')"
@@ -390,6 +391,90 @@ def toggle_like():
     else:
         return {'status': 'error'}, 404
 
+@app.route('/followingposts', methods=['GET', 'POST'])
+def followingposts():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    user = User.query.get(session['user_id'])
+
+    search_term = request.form.get('postsearch', '').strip()
+    sort_option = request.form.get('sort', 'Newest')
+
+    if search_term:
+        posts = Post.query.filter(Post.title.ilike(f'%{search_term}%'), Post.ispublic == 'public').all()
+    else:
+        posts = Post.query.filter(Post.ispublic == 'public')
+
+    if sort_option == 'Newest':
+        posts = posts.order_by(Post.created_date.desc())
+    elif sort_option == 'Most Liked':
+        posts = posts.order_by(Post.like_count.desc())
+
+    posts = posts.all()
+
+    liked_posts = user.liked_post_ids.split(',')
+    saved_posts = user.saved_post_ids.split(',')
+
+    followed_user_ids = user.followed_user_ids.split(',') if user.followed_user_ids else []
+    followed_users = User.query.filter(User.id.in_(followed_user_ids)).all()
+
+    return render_template('followingposts.html', user=user, posts=posts, liked_posts=liked_posts, saved_posts=saved_posts, followed_users=followed_users)
+
+@app.route('/follow', methods=['GET', 'POST'])
+def follow():
+    user = User.query.get(session['user_id'])
+
+    target_user_id = request.form.get('target_user_id')
+    target_user = User.query.filter_by(id=target_user_id).first()
+    target_user_posts = Post.query.filter(Post.user_id==target_user.id).all()
+
+    liked_posts = user.liked_post_ids.split(',')
+    saved_posts = user.saved_post_ids.split(',')
+
+    followed_user_ids = user.followed_user_ids.split(',') if user.followed_user_ids else []
+    if str(target_user.id) not in followed_user_ids:
+        followed_user_ids.append(str(target_user.id))
+
+    user.followed_user_ids = ','.join(followed_user_ids)
+    db.session.commit()
+
+    return render_template(
+        'user.html', 
+        user=user,
+        target_user=target_user, 
+        target_user_posts=target_user_posts, 
+        liked_posts=liked_posts, 
+        saved_posts=saved_posts, 
+    )
+
+@app.route('/unfollow', methods=['GET', 'POST'])
+def unfollow():
+    user = User.query.get(session['user_id'])
+
+    target_user_id = request.form.get('target_user_id')
+    target_user = User.query.filter_by(id=target_user_id).first()
+    target_user_posts = Post.query.filter(Post.user_id==target_user.id).all()
+
+    liked_posts = user.liked_post_ids.split(',')
+    saved_posts = user.saved_post_ids.split(',')
+
+    followed_user_ids = user.followed_user_ids.split(',') if user.followed_user_ids else []
+    if str(target_user.id) in followed_user_ids:
+        followed_user_ids.remove(str(target_user.id))
+
+    user.followed_user_ids = ','.join(followed_user_ids)
+    db.session.commit()
+
+    return render_template(
+            'user.html', 
+            user=user,
+            target_user=target_user, 
+            target_user_posts=target_user_posts, 
+            liked_posts=liked_posts, 
+            saved_posts=saved_posts, 
+        )
+        
 @app.route('/post/<int:post_id>', methods=['GET', 'POST'])
 def post(post_id):
     
