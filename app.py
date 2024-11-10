@@ -728,6 +728,34 @@ def settings():
 
     return render_template('settings.html', user=user)
 
+@app.route('/deleteaccount', methods=['GET', 'POST'])
+def deleteaccount():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    user_id = session['user_id']
+    user = User.query.get(user_id)
+
+    if user:
+        for liked_post_id in user.liked_post_ids:
+            post = Post.query.get(liked_post_id)
+            if post and post.like_count > 0:
+                post.like_count -= 1
+
+        for comment in Comment.query.filter_by(user_id=user_id).all():
+            post = Post.query.get(comment.post_id)
+            if post and post.comment_count > 0:
+                post.comment_count -= 1
+
+        Post.query.filter_by(user_id=user_id).delete()
+        Comment.query.filter_by(user_id=user_id).delete()
+
+        db.session.delete(user)
+        db.session.commit()
+        session.pop('user_id', None)
+
+    return redirect(url_for('visitor_homepage'))
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
