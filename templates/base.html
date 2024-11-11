@@ -18,34 +18,12 @@
             text-align: center;
             margin-bottom: 30px;
         }
-
-        .button-container {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            border-bottom: 2px solid #555555;
-            padding-bottom: 10px;
-            margin-top: 40px;
-            margin-bottom: 20px;
-        }
-
-        .button-container button {
-            margin: 10px;
-            padding: 12px 20px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
-            background-color: #6046ff;
-            color: white;
-        }
     </style>
 </head>
 <body>
     {% if g.user.role == 'User' %}
         <h1>Blog Platform</h1>
-        <div class="button-container">
+        <div class="base-button-container">
             <button onclick="location.href='/homepage'">Homepage</button>
             <button onclick="location.href='/followingposts'">Following</button>
             <button onclick="location.href='/myblog'">My Blog</button>
@@ -57,7 +35,7 @@
 
     {% if g.user.role == 'Admin' %}
         <h1>Blog Platform - Admin Panel</h1>
-        <div class="button-container">
+        <div class="base-button-container">
             <button onclick="location.href='/admin_homepage'">Homepage</button>
             <button onclick="location.href='/userlist'">Users</button>
             <button onclick="location.href='/postlist'">Posts</button>

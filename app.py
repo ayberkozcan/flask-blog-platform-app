@@ -674,8 +674,6 @@ def myblog():
 
     return render_template('myblog.html', posts=posts, liked_posts=liked_posts, saved_posts=saved_posts)
 
-    # return render_template('myblog.html', posts=posts)
-
 @app.route('/edit_post/<int:post_id>', methods=['GET', 'POST'])
 def edit_post(post_id):
     post = Post.query.get_or_404(post_id)
