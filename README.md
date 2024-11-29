@@ -8,7 +8,6 @@ A local SQLite database stores user credentials and blog posts, keeping the setu
 This project is mostly focused on the backend.
 
 ## Features
-
 - User registration and login
 - Create new posts
 - View posts
@@ -16,3 +15,8 @@ This project is mostly focused on the backend.
 - Delete posts
 - Follow users
 - Simple and user-friendly interface
+
+## License
+Distributed under the GPL License. See LICENSE.txt for more information.
+
+All icons in this repository are taken from and belong to the site https://uxwing.com
